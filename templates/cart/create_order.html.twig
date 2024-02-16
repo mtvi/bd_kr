@@ -1,0 +1,23 @@
+{# templates/order/create_order.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Create Order{% endblock %}
+
+{% block body %}
+    <h1>Create Order</h1>
+
+    {# Display cart content #}
+    <ul>
+        {% for product in cartData %}
+            <li>{{ product.vendor.name }} {{ product.GPU.name  }} - {{ productQuantities[product.id] }} - {{ productQuantities[product.id] * product.price }}</li>
+        {% endfor %}
+    </ul>
+
+    {# Render the order form #}
+    {{ form_start(form) }}
+    {{ form_row(form.CustomerName) }}
+    {# Add other customer-related form fields #}
+    {{ form_row(form.submit) }}
+    {{ form_end(form) }}
+{% endblock %}

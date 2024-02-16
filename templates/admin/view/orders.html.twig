@@ -1,0 +1,131 @@
+{% extends 'base.html.twig' %}
+{% block title %}
+	List of Orders
+
+{% endblock %}
+{% block body %}
+	<a href="{{ path('create_order') }}">
+		Create Orders
+
+	</a>
+	<br>
+	<h1>
+		List of Orders
+
+	</h1>
+	<form id="searchForm" method="get" action="{{ path('orders_view') }}">
+		<label for="search">
+			Search:
+
+		</label>
+		<input type="text" placeholder="Пошук" id="search" name="search" value="{{ search }}">
+
+		<label for="sort">
+			Sort:
+
+		</label>
+		<select id="sort" name="sort">
+			<option value="id asc" {% if sort == 'id asc' %} selected {% endif %}>
+				ID Ascending
+
+			</option>
+			<option value="id desc" {% if sort == 'id desc' %} selected {% endif %}>
+				ID Descending
+
+			</option>
+			<option value="TotalPrice asc" {% if sort == 'TotalPrice asc' %} selected {% endif %}>
+				TotalPrice Ascending
+
+			</option>
+			<option value="TotalPrice desc" {% if sort == 'TotalPrice desc' %} selected {% endif %}>
+				TotalPrice Descending
+
+			</option>
+
+			<option value="OrderDate asc" {% if sort == 'OrderDate asc' %} selected {% endif %}>
+				Order Date Ascending
+
+			</option>
+			<option value="OrderDate desc" {% if sort == 'OrderDate desc' %} selected {% endif %}>
+				Order Date Descending
+
+			</option>
+	
+		</select>
+		<button type="submit">
+			Search
+
+		</button>
+	</form>
+	<a href="{{ path('orders_view') }}">
+		clear search
+
+	</a>
+	<br>
+	<table>
+		<thead>
+			<tr>
+				<th>
+					ID
+
+				</th>
+				<th>
+					Customer Name
+
+				</th>
+				{# <th>
+													Address
+												</th> #}
+				<th>
+					Date
+				</th>
+				<th>
+					Order
+				</th>
+				<th>
+					Total price
+				</th>
+				<th>
+					Delete
+
+				</th>
+				<th>
+					Edit
+
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for order in orders %}
+				<tr>
+					<td>
+						{{ order.id }}
+					</td>
+					<td>
+						{{ order.CustomerName }}
+					</td>
+					<td>
+						{{ order.OrderDate|date('Y-m-d H:i:s')}}
+					</td>
+					{# {% for detail in order.%} #}
+					<td>
+						{{ order.TotalPrice }}
+					</td>
+
+
+					{# <td>
+																<a href="{{ path('delete_order', { 'id': pci.id }) }}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this product?')">
+																	Delete pci
+																</a>
+															</td>
+															<td>
+																<a href="{{ path('edit_pci', { 'id': pci.id }) }}" class="btn btn-success">
+																	Edit pci
+										
+																</a>
+															</td> #}
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</body></html>{% endblock %}

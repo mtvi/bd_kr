@@ -1,0 +1,40 @@
+{# templates/cart/view.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}View Cart{% endblock %}
+
+{% block body %}
+    <h1>Your Cart</h1>
+
+    {% if cartData|length > 0 %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in cartData %}
+                    <tr>
+                        <td>{{ product.vendor.name }} {{ product.GPU.name  }}</td>
+                        <td>{{ product.price }} UAH</td>
+                        <td>{{ product.quantity }}</td>
+                        <td>{{ product.price * product.quantity }} UAH</td>
+                        <td>
+                            <a href="{{ path('remove_from_cart', { 'id': product.id }) }}">Remove</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{{ path('clear_cart') }}">Clear Cart</a>
+        <a href="{{ path('create_order') }}">Create Order</a>
+    {% else %}
+        <p>Your cart is empty.</p>
+    {% endif %}
+{% endblock %}

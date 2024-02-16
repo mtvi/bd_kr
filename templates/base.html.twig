@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Graphics Galaxy!{% endblock %}</title>
+{% block stylesheets %}
+        {% endblock %}
+
+        {% block javascripts %}
+        {% endblock %}
+    </head>
+    <body>
+    <a href="{{ path('app_admin') }}">Admin</a><br>
+    <a href="{{ path('products_list') }}">Shop</a><br>
+    <a href="{{ path('view_cart') }}">Cart</a><br>
+        {% block body %}{% endblock %}
+    </body>
+</html>

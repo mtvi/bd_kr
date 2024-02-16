@@ -1,0 +1,14 @@
+{# templates/admin/create_product.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Create Category{% endblock %}
+
+{% block body %}
+    <h1>Create Category</h1>
+
+    {{ form_start(form) }}
+    {{ form_row(form.CategoryName) }}
+    {{ form_row(form.save) }}
+    {{ form_end(form) }}
+{% endblock %}

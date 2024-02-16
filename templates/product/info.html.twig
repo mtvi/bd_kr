@@ -1,0 +1,34 @@
+{# templates/product/product_list.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Product List</h1>
+
+    <ul>
+            <li>
+                <strong>{{ product.vendor.name }} {{ product.GPU.name  }}</strong><br>
+                Price: ${{ product.price }}<br>
+                <!-- Add more product details as needed -->
+            </li>
+            <h2>GPU Details</h2>
+            <p> Name: {{ product.gpu.name }}</p>
+            <p> Core Clock: {{ product.gpu.CoreClock }}</p>
+            <p> Manufacturer: {{ product.gpu.manufacturer.ManufacturerName }}</p>
+    </ul>
+<h2>Leave a Review</h2>
+    {{ form_start(reviewForm) }}
+    {{ form_widget(reviewForm) }}
+    <button type="submit">Submit Review</button>
+    {{ form_end(reviewForm) }}
+<h2>Reviews</h2>
+    {% for review in reviews %}
+    <div class="review">
+        <h3>{{ review.Reviewer }}</h3>
+        <p>{{ review.ReviewText }}</p>
+        <p>Date: {{ review.ReviewDate|date('Y-m-d') }}</p>
+        <p>Rating: {{ review.Rating }}</p>
+    </div>
+{% endfor %}
+
+{% endblock %}

@@ -1,0 +1,16 @@
+{# templates/admin/create_product.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Create Manufacturer{% endblock %}
+
+{% block body %}
+    <h1>Create Manufacturer</h1>
+
+    {{ form_start(form) }}
+    {{ form_row(form.ManufacturerName) }}
+    {{ form_row(form.Website) }}
+    {{ form_row(form.Country) }}
+    {{ form_row(form.save) }}
+    {{ form_end(form) }}
+{% endblock %}

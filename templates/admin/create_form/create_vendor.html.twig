@@ -1,0 +1,16 @@
+{# templates/admin/create_product.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Create Vendor{% endblock %}
+
+{% block body %}
+    <h1>Create Vendor</h1>
+
+    {{ form_start(form) }}
+    {{ form_row(form.Name) }}
+    {{ form_row(form.Website) }}
+    {{ form_row(form.Country) }}
+    {{ form_row(form.save) }}
+    {{ form_end(form) }}
+{% endblock %}

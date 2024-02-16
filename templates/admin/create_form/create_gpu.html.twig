@@ -1,0 +1,22 @@
+{# templates/admin/create_product.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Create GPU{% endblock %}
+
+{% block body %}
+    <h1>Create GPU</h1>
+
+    {{ form_start(form) }}
+    {{ form_row(form.Name) }}
+    {{ form_row(form.CoreClock) }}
+    {{ form_row(form.BoostClock) }}
+    {{ form_row(form.VRAM) }}
+    {{ form_row(form.TDP) }}
+    {{ form_row(form.Manufacturer) }}
+    {{ form_row(form.Memory) }}
+    {{ form_row(form.PCIVersion) }}
+    {{ form_row(form.Category) }}
+    {{ form_row(form.ReleaseDate) }}
+    {{ form_end(form) }}
+{% endblock %}

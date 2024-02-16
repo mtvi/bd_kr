@@ -1,0 +1,114 @@
+{% extends 'base.html.twig' %}
+{% block title %}
+	List of Memory Types
+
+{% endblock %}
+{% block body %}
+	<a href="{{ path('create_memorytype') }}">
+		Create Memory Type
+
+	</a>
+	<br>
+	<h1>
+		List of Memory Types
+
+	</h1>
+	<form id="searchForm" method="get" action="{{ path('memories_view') }}">
+		<label for="search">
+			Search:
+
+		</label>
+		<input type="text" placeholder="Пошук" id="search" name="search" value="{{ search }}">
+
+		<label for="sort">
+			Sort:
+
+		</label>
+		<select id="sort" name="sort">
+			<option value="id asc" {% if sort == 'id asc' %} selected {% endif %}>
+				ID Ascending
+
+			</option>
+			<option value="id desc" {% if sort == 'id desc' %} selected {% endif %}>
+				ID Descending
+
+			</option>
+		</select>
+		<button type="submit">
+			Search
+
+		</button>
+	</form>
+	<a href="{{ path('memories_view') }}">
+		clear search
+
+	</a>
+	<br>
+	<table>
+		<thead>
+			<tr>
+				<th>
+					ID
+
+				</th>
+				<th>
+					Type
+
+				</th>
+				<th>
+					speed
+
+				</th>
+				<th>
+					Bus Width
+
+				</th>
+				<th>
+					Band Width
+
+				</th>
+				<th>
+					Delete
+
+				</th>
+				<th>
+					Edit
+
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for memory in memories %}
+				<tr>
+					<td>
+						{{ memory.id }}
+					</td>
+					<td>
+						{{ memory.Type }}
+					</td>
+					<td>
+						{{ memory.Speed }}
+					</td>
+					<td>
+						{{ memory.BusWidth }}
+                    </td>
+					<td>
+						{{ memory.BandWidth }}
+                    </td>
+					<td>
+						<a href="{{ path('delete_memory', { 'id': memory.id }) }}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this product?')">
+							Delete memory type
+
+						</a>
+					</td>
+					<td>
+						<a href="{{ path('edit_memory', { 'id': memory.id }) }}" class="btn btn-success">
+							Edit memory type
+
+						</a>
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</body></html>{% endblock %}

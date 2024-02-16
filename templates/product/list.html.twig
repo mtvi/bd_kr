@@ -1,0 +1,150 @@
+{# templates/product/product_list.html.twig #}
+
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+	{# Add the following style block to set the image dimensions #}
+	<style>
+		img.product-image {
+			max-width: 100px; /* Set the maximum width */
+			max-height: 100px; /* Set the maximum height */
+		}
+	</style>
+{% endblock %}
+{% block body %}
+
+	<h1>Product List</h1>
+	<form id="searchForm" method="get" action="{{ path('products_list') }}">
+		<label for="search">
+			Search:
+
+		</label>
+		<input type="text" placeholder="Пошук" id="search" name="search" value="{{ search }}">
+		<label for="gpu">
+			GPU:
+
+		</label>
+
+		{# Populate GPU options based on your data #}
+		{% for gpu in gpus %}
+			<input type="checkbox" value="{{ gpu.id }}" {% if gpu.id in selectedGpus %} checked {% endif %} name="gpus[]">
+			{{ gpu.name }}
+
+		{% endfor %}
+		<br>
+		<label for="vendor">
+			Vendor:
+
+		</label>
+
+		{# Populate Vendor options based on your data #}
+		{% for vendor in vendors %}
+			<input name="vendors[]" type="checkbox" value="{{ vendor.id }}" {% if vendor.id in selectedVendors %} checked {% endif %}>
+			{{ vendor.name }}
+
+		{% endfor %}
+		<br>
+            <label for="manufacturer">
+            Manufacturer:
+        </label>
+        {% for manufacturer in manufacturers %}
+            <input name="manufacturers[]" type="checkbox" value="{{ manufacturer.id }}" {% if manufacturer.id in selectedManufacturers %} checked {% endif %}>
+            {{ manufacturer.ManufacturerName }}
+        {% endfor %}
+        <br>
+            <label for="memory">
+            Memory:
+        </label>
+        {% for memory in memories %}
+            <input name="memories[]" type="checkbox" value="{{ memory.id }}" {% if memory.id in selectedMemories %} checked {% endif %}>
+            {{ memory.type }}
+        {% endfor %}
+        <br>
+            <label for="pciversion">
+            PCI Version:
+        </label>
+        {% for pciversion in pciversions %}
+            <input name="pciversions[]" type="checkbox" value="{{ pciversion.id }}" {% if pciversion.id in selectedPCIVersions %} checked {% endif %}>
+            {{ pciversion.Version }}
+        {% endfor %}
+        <br>
+            <label for="category">
+            Category:
+        </label>
+        {% for category in categories %}
+            <input name="categories[]" type="checkbox" value="{{ category.id }}" {% if category.id in selectedCategories %} checked {% endif %}>
+            {{ category.CategoryName }}
+        {% endfor %}
+        <br>
+            <label for="mancountry">
+            Manufacturer Country:
+        </label>
+        {% for mancountry in mancountries %}
+            <input name="mancountries[]" type="checkbox" value="{{ mancountry }}" {% if mancountry in selectedManCountries %} checked {% endif %}>
+            {{ mancountry }}
+        {% endfor %}
+        <br>
+            <label for="vencountry">
+            Vendor Country:
+        </label>
+        {% for vencountry in vencountries %}
+            <input name=" []" type="checkbox" value="{{ vencountry }}" {% if vencountry in selectedVenCountries %} checked {% endif %}>
+            {{ vencountry }}
+        {% endfor %}
+        <br>
+        
+		<label for="sort">
+			Sort by Price:
+
+		</label>
+		<select id="sort" name="sort">
+			<option value="id asc" {% if sort == 'id asc' %} selected {% endif %}>
+				ID Ascending
+
+			</option>
+			<option value="id desc" {% if sort == 'id desc' %} selected {% endif %}>
+				ID Descending
+
+			</option>
+			<option value="Price asc" {% if sort == 'Price asc' %} selected {% endif %}>
+				Price Ascending
+
+			</option>
+			<option value="Price desc" {% if sort == 'Price desc' %} selected {% endif %}>
+				Price Descending
+
+			</option>
+			<option value="ReleaseDate asc" {% if sort == 'ReleaseDate asc' %} selected {% endif %}>
+				GPU Date Ascending
+
+			</option>
+			<option value="ReleaseDate desc" {% if sort == 'ReleaseDate desc' %} selected {% endif %}>
+				GPU Date Descending
+
+			</option>
+		</select>
+		<button type="submit">
+			Search
+
+		</button>
+	</form>
+	<a href="{{ path('products_list') }}">
+		clear search</a>
+	<ul>
+		{% for product in products %}
+			<li>
+				<a href="{{ path('product', {'id': product.id}) }}">
+					{% if product.image is not null %}
+						<img src="{{ asset('images/' ~ product.image) }}" alt="Product Image" class="product-image">
+					{% endif %}
+				</a>
+				{{ product.vendor.name }}
+				{{ product.GPU.name  }}
+				-
+				{{ product.price }}
+				USD
+				<a href="{{ path('add_to_cart', {'id': product.id}) }}">Add to Cart</a>
+			</li>
+		{% endfor %}
+	</ul>
+	<a href="{{ path('view_cart') }}">View Cart</a>
+{% endblock %}

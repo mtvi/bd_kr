@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello Admin!{% endblock %}
+
+{% block body %}
+<a href="{{ path('products_view') }}">view_products</a><br>
+<a href="{{ path('vendors_view') }}">view_vendors</a><br>
+<a href="{{ path('gpus_view') }}">view_gpus</a><br>
+<a href="{{ path('categories_view') }}">view_categories</a><br>
+<a href="{{ path('manufacturers_view') }}">view_manufacturers</a><br>
+ <a href="{{ path('memories_view') }}">view_memories</a><br>
+<a href="{{ path('orders_view') }}">view_orders</a><br>
+<a href="{{ path('pcies_view') }}">view_pcies</a><br>
+<a href="{{ path('reviews_view') }}">view_reviews</a><br> 
+
+<a href="{{ path('create_product') }}">create_product</a><br>
+<a href="{{ path('create_vendor') }}">create_vendor</a><br>
+<a href="{{ path('create_gpu') }}">create_gpu</a><br>
+<a href="{{ path('create_review') }}">create_review</a><br>
+<a href="{{ path('create_category') }}">create_category</a><br>
+<a href="{{ path('create_manufacturer') }}">create_manufacturer</a><br>
+<a href="{{ path('create_memorytype') }}">create_memorytype</a><br>
+<a href="{{ path('create_orderdetails') }}">create_orderdetails</a><br>
+<a href="{{ path('create_order') }}">create_order</a><br>
+<a href="{{ path('create_pci') }}">create_pci</a><br>
+
+{% endblock %}
