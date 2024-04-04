@@ -2,22 +2,48 @@
 
 {% extends 'base.html.twig' %}
 
-{% block title %}Create Order{% endblock %}
+{% block title %}Create Order
+{% endblock %}
 
 {% block body %}
-    <h1>Create Order</h1>
 
-    {# Display cart content #}
-    <ul>
-        {% for product in cartData %}
-            <li>{{ product.vendor.name }} {{ product.GPU.name  }} - {{ productQuantities[product.id] }} - {{ productQuantities[product.id] * product.price }}</li>
-        {% endfor %}
-    </ul>
+	<div class="d-flex justify-content-center py-5">
+		<div class="card mb-4 col-md-4">
+			<div class="card-header py-3">
+				<h5 class="mb-0">Summary</h5>
+			</div>
+			<div class="card-body">
+				<ul class="list-group list-group-flush">
+					{% for product in cartData %}
 
-    {# Render the order form #}
-    {{ form_start(form) }}
-    {{ form_row(form.CustomerName) }}
-    {# Add other customer-related form fields #}
-    {{ form_row(form.submit) }}
-    {{ form_end(form) }}
+						<li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
+							{{ product.vendor.name }}
+							{{ product.GPU.name  }}
+							-
+							{{ productQuantities[product.id] }}
+							Qty
+							<span>${{ productQuantities[product.id] * product.price }}</span>
+						</li>
+					{% endfor %}
+
+					<li class="list-group-item d-flex justify-content-between align-items-center px-0">
+						Shipping
+						<span>Free</span>
+					</li>
+					<li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3 fs-5">
+						<div>
+							<strong>Total amount</strong>
+
+						</div>
+						<span>
+							<strong>${{totalPrice}}</strong>
+						</span>
+					</li>
+				</ul>
+                	{{ form(form)}}
+				{# <a class="btn btn-dark btn-lg btn-block w-100" href="{{ path('create_order') }}">Create Order</a> #}
+			</div>
+		</div>
+	</div>
+
 {% endblock %}

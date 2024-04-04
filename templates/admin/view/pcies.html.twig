@@ -4,102 +4,78 @@
 
 {% endblock %}
 {% block body %}
-	<a href="{{ path('create_pci') }}">
-		Create PCI
+{% include 'admin/base.html.twig' %}
+<form id="searchForm" method="get" action="{{ path('pcies_view') }}">
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-2">
+                <div class="form-group">
+                    <a class="btn btn-dark form-control" href="{{ path('create_pci') }}">
+                        Create PCI
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <input type="text" class="form-control" id="search" name="search" value="{{ search }}" placeholder="Search">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <select class="form-select" id="sort" name="sort">
+                        <option value="id asc" {% if sort == 'id asc' %} selected {% endif %}>
+                            ID Ascending
+                        </option>
+                        <option value="id desc" {% if sort == 'id desc' %} selected {% endif %}>
+                            ID Descending
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success form-control">Search</button>
+                </div>
+            </div>
+        </div>
 
-	</a>
-	<br>
-	<h1>
-		List of PCI
+        <div class="row mt-3">
+            <div class="col">
+                <table class="table table-striped table-hover table-sm align-middle">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Version</th>
+                            <th>Band Width</th>
+                            <th>Lanes Number</th>
+                            <th>Delete</th>
+                            <th>Edit</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-group-divider">
+                        {% for pci in pcies %}
+                            <tr>
+                                <td>{{ pci.id }}</td>
+                                <td>{{ pci.Version }}</td>
+                                <td>{{ pci.BandWidth }} GB/s</td>
+                                <td>x{{ pci.LanesNumber }}</td>
+                                <td>
+                                    <a href="{{ path('delete_pci', { 'id': pci.id }) }}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this PCI?')">
+                                        &#10005;
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{{ path('edit_pci', { 'id': pci.id }) }}" class="btn btn-success">
+                                        &#9998;
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</form>
 
-	</h1>
-	<form id="searchForm" method="get" action="{{ path('pcies_view') }}">
-		<label for="search">
-			Search:
-
-		</label>
-		<input type="text" placeholder="Пошук" id="search" name="search" value="{{ search }}">
-
-		<label for="sort">
-			Sort:
-
-		</label>
-		<select id="sort" name="sort">
-			<option value="id asc" {% if sort == 'id asc' %} selected {% endif %}>
-				ID Ascending
-
-			</option>
-			<option value="id desc" {% if sort == 'id desc' %} selected {% endif %}>
-				ID Descending
-
-			</option>
-		</select>
-		<button type="submit">
-			Search
-
-		</button>
-	</form>
-	<a href="{{ path('pcies_view') }}">
-		clear search
-
-	</a>
-	<br>
-	<table>
-		<thead>
-			<tr>
-				<th>
-					ID
-
-				</th>
-				<th>
-					Version
-
-				</th>
-				<th>
-					Band Width
-
-				</th>
-				<th>
-					Lanes Number
-				</th>
-				<th>
-					Delete
-
-				</th>
-				<th>
-					Edit
-
-				</th>
-			</tr>
-		</thead>
-		<tbody>
-			{% for pci in pcies %}
-				<tr>
-					<td>
-						{{ pci.id }}
-					</td>
-					<td>
-						{{ pci.Version }}
-					</td>
-					<td>
-						{{ pci.BandWidth }}
-                    </td>
-					<td>
-						{{ pci.LanesNumber }}
-					</td>
-					<td>
-						<a href="{{ path('delete_pci', { 'id': pci.id }) }}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this product?')">
-							Delete pci
-						</a>
-					</td>
-					<td>
-						<a href="{{ path('edit_pci', { 'id': pci.id }) }}" class="btn btn-success">
-							Edit pci
-
-						</a>
-					</td>
-				</tr>
-			{% endfor %}
-		</tbody>
-	</table>
-</body></html>{% endblock %}
+{% endblock %}

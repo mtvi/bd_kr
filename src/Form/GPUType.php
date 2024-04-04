@@ -38,7 +38,7 @@ class GPUType extends AbstractType
                 'class' => 'App\Entity\Categories',
                 'choice_label' => 'CategoryName',
             ])
-            ->add('save', SubmitType::class, ['label' => 'Create Product']);
+            ->add('save', SubmitType::class, ['label' => 'Save']);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

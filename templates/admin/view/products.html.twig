@@ -1,184 +1,296 @@
 {% extends 'base.html.twig' %}
 {% block title %}
-    List of Products
-    
+	List of Products
+
 {% endblock %}
 {% block stylesheets %}
-    {# Add the following style block to set the image dimensions #}
-    <style>
-        img.product-image {
-            max-width: 100px;  /* Set the maximum width */
-            max-height: 100px; /* Set the maximum height */
-        }
-    </style>
+
+	{# Add the following style block to set the image dimensions #}
+
 {% endblock %}
 {% block body %}
-    <a href="{{ path('create_product') }}">
-        Create product
-            
-    </a>
-    <br>
-        <h1>
-            List of Products
-                    
-        </h1>
-        <form id="searchForm" method="get" action="{{ path('products_view') }}">
-            <label for="search">
-                Search:
-                            
-            </label>
-            <input type="text" placeholder="Пошук" id="search" name="search" value="{{ search }}">
-                <label for="gpu">
-                    GPU:
-                                    
-                </label>
-                <select id="gpu" name="gpu">
-                    <option value="">
-                        All GPUs
-                                            
-                    </option>
-                    {# Populate GPU options based on your data #}
-                    {% for gpu in gpus %}
-                        <option value="{{ gpu.id }}" {% if gpu.id == selectedGpu %} selected{% endif %}>
-                            {{ gpu.name }}
-                        </option>
-                    {% endfor %}
-                </select>
-                <label for="vendor">
-                    Vendor:
-                                    
-                </label>
-                <select id="vendor" name="vendor">
-                    <option value="">
-                        All Vendors
-                                            
-                    </option>
-                    {# Populate Vendor options based on your data #}
-                    {% for vendor in vendors %}
-                        <option value="{{ vendor.id }}" {% if vendor.id == selectedVendor %} selected{% endif %}>
-                            {{ vendor.name }}
-                        </option>
-                    {% endfor %}
-                </select>
-                <label for="sort">
-                    Sort by Price:
-                                    
-                </label>
-                <select id="sort" name="sort">
-                    <option value="id asc" {% if sort == 'id asc' %} selected{% endif %}>
-                        ID Ascending
-                                            
-                    </option>
-                    <option value="id desc" {% if sort == 'id desc' %} selected{% endif %}>
-                        ID Descending
-                                            
-                    </option>
-                    <option value="Price asc" {% if sort == 'Price asc' %} selected{% endif %}>
-                        Price Ascending
-                                            
-                    </option>
-                    <option value="Price desc" {% if sort == 'Price desc' %} selected{% endif %}>
-                        Price Descending
-                                            
-                    </option>
-                    <option value="ReleaseDate asc" {% if sort == 'ReleaseDate asc' %} selected{% endif %}>
-                        GPU Date Ascending
-                                    
-                    </option>
-                    <option value="ReleaseDate desc" {% if sort == 'ReleaseDate desc' %} selected{% endif %}>
-                        GPU Date Descending
-                                    
-                    </option>
-                </select>
-                <button type="submit">
-                    Search
-                                    
-                </button>
-            </form>
-            <a href="{{ path('products_view') }}">
-                clear search
-                            
-            </a>
-            <br>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>
-                                Image
-                                                            
-                            </th>
-                            <th>
-                                ID
-                                                            
-                            </th>
-                            <th>
-                                GPU
-                                                            
-                            </th>
-                            <th>
-                                Vendor
-                                                            
-                            </th>
-                            <th>
-                                Price
-                                                            
-                            </th>
-                            <th>
-                                Cooling Type
-                                                            
-                            </th>
-                            <th>
-                                Delete
-                                                            
-                            </th>
-                            <th>
-                                Edit
-                                                            
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for product in products %}
-                            <tr>
-                                <td>
-                                    {% if product.image is not null %}
-                                        <img src="{{ asset('images/' ~ product.image) }}" alt="Product Image" class="product-image">
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {{ product.id }}
-                                    </td>
-                                    <td>
-                                        {{ product.Vendor.name }}
-                                    </td>
-                                    <td>
-                                        {{ product.GPU.Name }}
-                                    </td>
-                                    <td>
-                                        {{ product.Price }}
-                                        UAH
-                                                                            
-                                    </td>
-                                    <td>
-                                        {{ product.CoolingType }}
-                                    </td>
-                                    <td>
-                                        <a href="{{ path('delete_product', { 'id': product.id }) }}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this product?')">
-                                            Delete Product
-                                                                                    
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="{{ path('edit_product', { 'id': product.id }) }}" class="btn btn-success">
-                                            Edit Product
-                                                                                    
-                                        </a>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </body>
-            </html>
-        {% endblock %}
-        
+	{% include 'admin/base.html.twig' %}
+
+	<form id="searchForm" method="get" action="{{ path('products_view') }}">
+		<div class="container mt-5">
+			<div class="row">
+				<div class="col-md-2">
+					<div class="form-group">
+						<a class="btn btn-dark form-control" href="{{ path('create_product') }}">
+							Create product
+						</a>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<input type="text" class="form-control" id="search" name="search" value="{{ search }}" placeholder="Search">
+					</div>
+				</div>
+				<div class="col-md-2">
+					<div class="form-group">
+						<select class="form-select " id="sort" name="sort">
+							<option value="id asc" {% if sort == 'id asc' %} selected {% endif %}>
+								ID Ascending
+
+							</option>
+							<option value="id desc" {% if sort == 'id desc' %} selected {% endif %}>
+								ID Descending
+
+							</option>
+							<option value="Price asc" {% if sort == 'Price asc' %} selected {% endif %}>
+								Price Ascending
+
+							</option>
+							<option value="Price desc" {% if sort == 'Price desc' %} selected {% endif %}>
+								Price Descending
+
+							</option>
+							<option value="ReleaseDate asc" {% if sort == 'ReleaseDate asc' %} selected {% endif %}>
+								GPU Date Ascending
+
+							</option>
+							<option value="ReleaseDate desc" {% if sort == 'ReleaseDate desc' %} selected {% endif %}>
+								GPU Date Descending
+
+							</option>
+							<option value="Rating asc" {% if sort == 'Rating asc' %} selected {% endif %}>
+								Rating Ascending
+
+							</option>
+							<option value="Rating desc" {% if sort == 'Rating desc' %} selected {% endif %}>
+								Rating Descending
+
+							</option>
+							<option value="Quantity asc" {% if sort == 'Quantity asc' %} selected {% endif %}>
+								Quantity Ascending
+
+							</option>
+							<option value="Quantity desc" {% if sort == 'Quantity desc' %} selected {% endif %}>
+								Quantity Descending
+
+							</option>
+						</select>
+					</div>
+				</div>
+				<div class="col-md-2">
+					<div class="form-group">
+						<button type="submit" class="btn btn-success form-control">Search</button>
+					</div>
+				</div>
+
+
+			</div>
+			<div class="row mt-3">
+				<div class="col-md-3">
+					<h3>Filters</h3>
+
+					<div class="form-group">
+						<label for="startPrice">Start Price:</label>
+						<div class="input-group">
+							<input type="number" class="form-control" id="startPrice" name="startPrice" value="{{ startPrice }}">
+							<div class="input-group-append">
+								<span class="input-group-text">$</span>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="endPrice">End Price:</label>
+						<div class="input-group">
+							<input type="number" class="form-control" id="endPrice" name="endPrice" value="{{ endPrice }}">
+							<div class="input-group-append">
+								<span class="input-group-text">$</span>
+							</div>
+						</div>
+					</div>
+
+
+					<div class="form-group">
+						<label for="gpu">GPU:</label>
+						{% for gpu in gpus %}
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" id="gpu{{ gpu.id }}" value="{{ gpu.id }}" {% if gpu.id in selectedGpus %} checked {% endif %} name="gpus[]">
+								<label class="form-check-label" for="gpu{{ gpu.id }}">{{ gpu.name }}</label>
+							</div>
+						{% endfor %}
+					</div>
+					<div class="form-group">
+						<label for="vendor">Vendor:</label>
+						{% for vendor in vendors %}
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" id="vendor{{ vendor.id }}" value="{{ vendor.id }}" {% if vendor.id in selectedVendors %} checked {% endif %} name="vendors[]">
+								<label class="form-check-label" for="vendor{{ vendor.id }}">{{ vendor.name }}</label>
+							</div>
+						{% endfor %}
+					</div>
+
+					<div class="form-group">
+						<label for="manufacturer">Manufacturer:</label>
+						{% for manufacturer in manufacturers %}
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" id="manufacturer{{ manufacturer.id }}" value="{{ manufacturer.id }}" {% if manufacturer.id in selectedManufacturers %} checked {% endif %} name="manufacturers[]">
+								<label class="form-check-label" for="manufacturer{{ manufacturer.id }}">{{ manufacturer.ManufacturerName }}</label>
+							</div>
+						{% endfor %}
+					</div>
+
+					<div class="form-group">
+						<label for="memory">Memory:</label>
+						{% for memory in memories %}
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" id="memory{{ memory.id }}" value="{{ memory.id }}" {% if memory.id in selectedMemories %} checked {% endif %} name="memories[]">
+								<label class="form-check-label" for="memory{{ memory.id }}">{{ memory.type }}</label>
+							</div>
+						{% endfor %}
+					</div>
+
+					<div class="form-group">
+						<label for="pciversion">PCI Version:</label>
+						{% for pciversion in pciversions %}
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" id="pciversion{{ pciversion.id }}" value="{{ pciversion.id }}" {% if pciversion.id in selectedPCIVersions %} checked {% endif %} name="pciversions[]">
+								<label class="form-check-label" for="pciversion{{ pciversion.id }}">{{ pciversion.Version }}</label>
+							</div>
+						{% endfor %}
+					</div>
+
+					<div class="form-group">
+						<label for="category">Category:</label>
+						{% for category in categories %}
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" id="category{{ category.id }}" value="{{ category.id }}" {% if category.id in selectedCategories %} checked {% endif %} name="categories[]">
+								<label class="form-check-label" for="category{{ category.id }}">{{ category.CategoryName }}</label>
+							</div>
+						{% endfor %}
+					</div>
+
+					<div class="form-group">
+						<label for="mancountry">Manufacturer Country:</label>
+						{% for mancountry in mancountries %}
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" id="mancountry{{ mancountry }}" value="{{ mancountry }}" {% if mancountry in selectedManCountries %} checked {% endif %} name="mancountries[]">
+								<label class="form-check-label" for="mancountry{{ mancountry }}">{{ mancountry }}</label>
+							</div>
+						{% endfor %}
+					</div>
+
+					<div class="form-group">
+						<label for="vencountry">Vendor Country:</label>
+						{% for vencountry in vencountries %}
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" id="vencountry{{ vencountry }}" value="{{ vencountry }}" {% if vencountry in selectedVenCountries %} checked {% endif %} name="vencountries[]">
+								<label class="form-check-label" for="vencountry{{ vencountry }}">{{ vencountry }}</label>
+							</div>
+						{% endfor %}
+					</div>
+
+				</div>
+				<div class="col-md-9">
+
+
+					<div class="row">
+						<table class="table table-striped table-hover table-sm align-middle">
+							<thead>
+								<tr>
+									<th>
+										ID
+
+									</th>
+									<th>
+										Image
+
+									</th>
+
+
+									<th>
+										Vendor
+
+									</th>
+									<th>
+										GPU
+
+									</th>
+									<th>
+										Price
+
+									</th>
+									<th>
+										Quantity
+
+									</th>
+									<th>
+										Rating
+
+									</th>
+									<th>
+										Delete
+
+									</th>
+									<th>
+										Edit
+
+									</th>
+								</tr>
+							</thead>
+							<tbody class="table-group-divider">
+								{% for product in products %}
+									<tr>
+										<td>
+											{{ product.id }}
+										</td>
+										<td>
+											{% if product.image is not null %}
+												<img src="{{ asset('images/' ~ product.image) }}" alt="Product Image" class="rounded" style="object-fit: cover; height: 100px;width: 100px">
+											{% endif %}
+										</td>
+
+										<td>
+											{{ product.Vendor.name }}
+										</td>
+										<td>
+											{{ product.GPU.Name }}
+										</td>
+										<td>
+											${{ product.Price }}
+										</td>
+										<td>
+											{{ product.Quantity }}
+										</td>
+										<td>
+											{% if product.Rating==0 %}
+												No rating
+											{% else %}
+												{{ product.Rating|number_format(2) }}&#10030;
+											{% endif %}
+										</td>
+										<td>
+											<a href="{{ path('delete_product', { 'id': product.id }) }}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this product?')">
+												&#10005;
+
+											</a>
+										</td>
+										<td>
+											<a href="{{ path('edit_product', { 'id': product.id }) }}" class="btn btn-success">
+												&#9998;
+
+											</a>
+										</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+
+				</div>
+			</form>
+			<script>
+				$(document).ready(function () {
+$('.input-id').rating({
+step: 0,
+size: 'xs',
+showClear: false,
+readonly: true,
+showCaption: false
+});
+});
+			</script>
+		{% endblock %}

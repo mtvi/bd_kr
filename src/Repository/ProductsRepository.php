@@ -22,7 +22,7 @@ class ProductsRepository extends ServiceEntityRepository
     }
 
 
-    public function search($value, $gpuIds, $vendorIds,$manufcaturerIds, $memoryIds, $pciIds, $categoryIds, $mCountries, $vCountries, $sortBy, $sortDir): array
+    public function search($value, $gpuIds, $vendorIds,$manufcaturerIds, $memoryIds, $pciIds, $categoryIds, $mCountries, $vCountries, $startPrice, $endPrice, $sortBy, $sortDir): array
     {
         $value = strtolower($value);
 
@@ -79,6 +79,14 @@ class ProductsRepository extends ServiceEntityRepository
             $qb->andWhere('v.Country IN (:vCountries)')
                 ->setParameter('vCountries', $vCountries);
         }
+        if (!empty($startPrice)) {
+            $qb->andWhere('e.Price >+ (:startPrice)')
+                ->setParameter('startPrice', $startPrice);
+        }
+        if (!empty($endPrice)) {
+            $qb->andWhere('e.Price <= (:endPrice)')
+                ->setParameter('endPrice', $endPrice);
+        }
 
         if ($sortBy == 'ReleaseDate') {
             $qb->orderBy('g.' . $sortBy, $sortDir);
@@ -90,6 +98,7 @@ class ProductsRepository extends ServiceEntityRepository
         return $result;
     }
 
+    
 
 
     //    /**

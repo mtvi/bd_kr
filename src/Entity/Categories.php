@@ -6,6 +6,7 @@ use App\Repository\CategoriesRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\DBAL\Types\Types;
 
 #[ORM\Entity(repositoryClass: CategoriesRepository::class)]
 class Categories
@@ -17,6 +18,9 @@ class Categories
 
     #[ORM\Column(length: 50)]
     private ?string $CategoryName = null;
+    
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $Description = null;
 
     #[ORM\OneToMany(mappedBy: 'Category', targetEntity: GPU::class)]
     private Collection $GPUs;
@@ -39,6 +43,18 @@ class Categories
     public function setCategoryName(string $CategoryName): static
     {
         $this->CategoryName = $CategoryName;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->Description;
+    }
+
+    public function setDescription(string $Description): static
+    {
+        $this->Description = $Description;
 
         return $this;
     }

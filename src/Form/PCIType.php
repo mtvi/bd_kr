@@ -17,7 +17,7 @@ class PCIType extends AbstractType
             ->add('Version', TextType::class)
             ->add('BandWidth')
             ->add('LanesNumber')
-            ->add('save', SubmitType::class, ['label' => 'Create Product']);
+            ->add('save', SubmitType::class, ['label' => 'Save']);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

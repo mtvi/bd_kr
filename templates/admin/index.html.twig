@@ -1,27 +1,270 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello Admin!{% endblock %}
+{% block title %}Hello Admin!
+{% endblock %}
 
 {% block body %}
-<a href="{{ path('products_view') }}">view_products</a><br>
-<a href="{{ path('vendors_view') }}">view_vendors</a><br>
-<a href="{{ path('gpus_view') }}">view_gpus</a><br>
-<a href="{{ path('categories_view') }}">view_categories</a><br>
-<a href="{{ path('manufacturers_view') }}">view_manufacturers</a><br>
- <a href="{{ path('memories_view') }}">view_memories</a><br>
-<a href="{{ path('orders_view') }}">view_orders</a><br>
-<a href="{{ path('pcies_view') }}">view_pcies</a><br>
-<a href="{{ path('reviews_view') }}">view_reviews</a><br> 
 
-<a href="{{ path('create_product') }}">create_product</a><br>
-<a href="{{ path('create_vendor') }}">create_vendor</a><br>
-<a href="{{ path('create_gpu') }}">create_gpu</a><br>
-<a href="{{ path('create_review') }}">create_review</a><br>
-<a href="{{ path('create_category') }}">create_category</a><br>
-<a href="{{ path('create_manufacturer') }}">create_manufacturer</a><br>
-<a href="{{ path('create_memorytype') }}">create_memorytype</a><br>
-<a href="{{ path('create_orderdetails') }}">create_orderdetails</a><br>
-<a href="{{ path('create_order') }}">create_order</a><br>
-<a href="{{ path('create_pci') }}">create_pci</a><br>
 
-{% endblock %}
+	{% include 'admin/base.html.twig' %}
+
+	<form id="searchForm" method="get" action="{{ path('statistic') }}">
+		<div class="container mt-5">
+			<div class="row">
+				<div class="col-md-2">
+
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<input type="text" class="form-control" id="search" name="search" value="{{ search }}" placeholder="Search">
+					</div>
+				</div>
+				<div class="col-md-2">
+					<div class="form-group">
+						<select class="form-select " id="sort" name="sort">
+							<option value="id asc" {% if sort == 'id asc' %} selected {% endif %}>
+								ID Ascending
+
+							</option>
+							<option value="id desc" {% if sort == 'id desc' %} selected {% endif %}>
+								ID Descending
+
+							</option>
+							<option value="Price asc" {% if sort == 'Price asc' %} selected {% endif %}>
+								Price Ascending
+
+							</option>
+							<option value="Price desc" {% if sort == 'Price desc' %} selected {% endif %}>
+								Price Descending
+
+							</option>
+							<option value="ReleaseDate asc" {% if sort == 'ReleaseDate asc' %} selected {% endif %}>
+								GPU Date Ascending
+
+							</option>
+							<option value="ReleaseDate desc" {% if sort == 'ReleaseDate desc' %} selected {% endif %}>
+								GPU Date Descending
+
+							</option>
+							<option value="Rating asc" {% if sort == 'Rating asc' %} selected {% endif %}>
+								Rating Ascending
+
+							</option>
+							<option value="Rating desc" {% if sort == 'Rating desc' %} selected {% endif %}>
+								Rating Descending
+
+							</option>
+							<option value="Quantity asc" {% if sort == 'Quantity asc' %} selected {% endif %}>
+								Quantity Ascending
+
+							</option>
+							<option value="Quantity desc" {% if sort == 'Quantity desc' %} selected {% endif %}>
+								Quantity Descending
+
+							</option>
+						</select>
+					</div>
+				</div>
+				<div class="col-md-2">
+					<div class="form-group">
+						<button type="submit" class="btn btn-success form-control">Search</button>
+					</div>
+				</div>
+
+
+			</div>
+			<div class="row mt-3">
+				<div class="col-md-3">
+					<h3>Filters</h3>
+
+					<div class="form-group">
+						<label for="gpu">GPU:</label>
+						{% for gpu in gpus %}
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" id="gpu{{ gpu.id }}" value="{{ gpu.id }}" {% if gpu.id in selectedGpus %} checked {% endif %} name="gpus[]">
+								<label class="form-check-label" for="gpu{{ gpu.id }}">{{ gpu.name }}</label>
+							</div>
+						{% endfor %}
+					</div>
+					<div class="form-group">
+						<label for="vendor">Vendor:</label>
+						{% for vendor in vendors %}
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" id="vendor{{ vendor.id }}" value="{{ vendor.id }}" {% if vendor.id in selectedVendors %} checked {% endif %} name="vendors[]">
+								<label class="form-check-label" for="vendor{{ vendor.id }}">{{ vendor.name }}</label>
+							</div>
+						{% endfor %}
+					</div>
+
+					<div class="form-group">
+						<label for="manufacturer">Manufacturer:</label>
+						{% for manufacturer in manufacturers %}
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" id="manufacturer{{ manufacturer.id }}" value="{{ manufacturer.id }}" {% if manufacturer.id in selectedManufacturers %} checked {% endif %} name="manufacturers[]">
+								<label class="form-check-label" for="manufacturer{{ manufacturer.id }}">{{ manufacturer.ManufacturerName }}</label>
+							</div>
+						{% endfor %}
+					</div>
+
+					<div class="form-group">
+						<label for="memory">Memory:</label>
+						{% for memory in memories %}
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" id="memory{{ memory.id }}" value="{{ memory.id }}" {% if memory.id in selectedMemories %} checked {% endif %} name="memories[]">
+								<label class="form-check-label" for="memory{{ memory.id }}">{{ memory.type }}</label>
+							</div>
+						{% endfor %}
+					</div>
+
+					<div class="form-group">
+						<label for="pciversion">PCI Version:</label>
+						{% for pciversion in pciversions %}
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" id="pciversion{{ pciversion.id }}" value="{{ pciversion.id }}" {% if pciversion.id in selectedPCIVersions %} checked {% endif %} name="pciversions[]">
+								<label class="form-check-label" for="pciversion{{ pciversion.id }}">{{ pciversion.Version }}</label>
+							</div>
+						{% endfor %}
+					</div>
+
+					<div class="form-group">
+						<label for="category">Category:</label>
+						{% for category in categories %}
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" id="category{{ category.id }}" value="{{ category.id }}" {% if category.id in selectedCategories %} checked {% endif %} name="categories[]">
+								<label class="form-check-label" for="category{{ category.id }}">{{ category.CategoryName }}</label>
+							</div>
+						{% endfor %}
+					</div>
+
+					<div class="form-group">
+						<label for="mancountry">Manufacturer Country:</label>
+						{% for mancountry in mancountries %}
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" id="mancountry{{ mancountry }}" value="{{ mancountry }}" {% if mancountry in selectedManCountries %} checked {% endif %} name="mancountries[]">
+								<label class="form-check-label" for="mancountry{{ mancountry }}">{{ mancountry }}</label>
+							</div>
+						{% endfor %}
+					</div>
+
+					<div class="form-group">
+						<label for="vencountry">Vendor Country:</label>
+						{% for vencountry in vencountries %}
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" id="vencountry{{ vencountry }}" value="{{ vencountry }}" {% if vencountry in selectedVenCountries %} checked {% endif %} name="vencountries[]">
+								<label class="form-check-label" for="vencountry{{ vencountry }}">{{ vencountry }}</label>
+							</div>
+						{% endfor %}
+					</div>
+
+				</div>
+				<div class="col-md-9">
+
+					<div class="row">
+						<div style="width: 80%; margin: auto;">
+							<canvas id="productViewsChart"></canvas>
+						</div>
+						<div style="width: 80%; margin: auto;">
+							<canvas id="productRatingsChart"></canvas>
+						</div>
+						<div style="width: 80%; margin: auto;">
+							<canvas id="productOrdersChart"></canvas>
+						</div>
+					</div>
+
+				</div>
+			</form>
+			<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+			<script>
+				const productNames = {{ names| json_encode | raw }};
+				const productViews = {{ views| json_encode | raw }};
+				const productRatings = {{ ratings| json_encode | raw }};
+				const productQuantities = {{ productQuantities|json_encode|raw }};
+
+				// Get the canvas element
+				const ctxV = document.getElementById('productViewsChart').getContext('2d');
+				const ctxR = document.getElementById('productRatingsChart').getContext('2d');
+				const ctxO = document.getElementById('productOrdersChart').getContext('2d');
+				// Create the chart
+				const chartV = new Chart(ctxV, {
+					type: 'bar',
+					data: {
+						labels: productNames,
+						datasets: [
+							{
+								label: 'Views',
+								data: productViews,
+								backgroundColor: 'rgba(91, 8, 174, 0.5)', // Blue color with transparency
+								borderColor: 'rgba(91, 8, 174, 1)', // Solid blue color
+								borderWidth: 1
+							}
+						]
+					},
+					options: {
+						scales: {
+							yAxes: [
+								{
+									ticks: {
+										beginAtZero: true
+									}
+								}
+							]
+						}
+					}
+				});
+				const chartR = new Chart(ctxR, {
+					type: 'bar',
+					data: {
+						labels: productNames,
+						datasets: [
+							{
+								label: 'Ratings',
+								data: productRatings,
+								backgroundColor: 'rgba(54, 162, 235, 0.5)', // Blue color with transparency
+								borderColor: 'rgba(54, 162, 235, 1)', // Solid blue color
+								borderWidth: 1
+							}
+						]
+					},
+					options: {
+						scales: {
+							yAxes: [
+								{
+									ticks: {
+										beginAtZero: true
+									}
+								}
+							]
+						}
+					}
+				});
+				const chartO = new Chart(ctxO, {
+					type: 'bar',
+					data: {
+						labels: Object.keys(productQuantities),
+						datasets: [
+							{
+								label: 'Order Quantities',
+								data: Object.values(productQuantities),
+								backgroundColor: 'rgba(245, 132, 19, 0.5)', // Blue color with transparency
+								borderColor: 'rgba(245, 132, 19, 1)', // Solid blue color
+								borderWidth: 1
+							}
+						]
+					},
+					options: {
+						scales: {
+							yAxes: [
+								{
+									ticks: {
+										beginAtZero: true
+									}
+								}
+							]
+						}
+					}
+				});
+				
+				
+			</script>
+
+		{% endblock %}

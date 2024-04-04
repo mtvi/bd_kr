@@ -19,7 +19,7 @@ class OrderType extends AbstractType
             ->add('CustomerName', TextType::class)
             ->add('OraderDate', DateType::class)
             ->add('TotalPrice', MoneyType::class)
-            ->add('save', SubmitType::class, ['label' => 'Create Product']);
+            ->add('save', SubmitType::class, ['label' => 'Save']);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -40,13 +40,105 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class AdminController extends AbstractController
 {
-    #[Route('/admin', name: 'app_admin')]
-    public function index(): Response
+    #[Route('/admin', name: 'statistic')]
+    public function index(ManufacturersRepository $manufacturersRepository, MemoryTypesRepository $memoryTypesRepository, PCIRepository $pCIRepository, CategoriesRepository $categoriesRepository, ProductsRepository $productsRepository, VendorsRepository $vendorsRepository, GPURepository $gPURepository, Request $request, OrderDetailsRepository $orderDetailsRepository)
     {
+        $search = $request->query->get('search');
+        $selectedGpus = $request->query->all()['gpus'] ?? null;
+        $selectedVendors = $request->query->all()['vendors'] ?? null;
+        $selectedManufacturers = $request->query->all()['manufacturers'] ?? null;
+        $selectedMemories = $request->query->all()['memories'] ?? null;
+        $selectedPCIVersions = $request->query->all()['pciversions'] ?? null;
+        $selectedCategories = $request->query->all()['categories'] ?? null;
+        $selectedMancountries = $request->query->all()['mancountries'] ?? null;
+        $selectedVencountries = $request->query->all()['vencountries'] ?? null;
+        $sort = $request->query->get('sort');
+        $startPrice = $request->query->get('startPrice');
+        $endPrice = $request->query->get('endPrice');
+        if ($sort === null) {
+            $sortBy = 'id';
+            $sortDir = 'asc';
+        } else {
+            list($sortBy, $sortDir) = explode(" ", $sort);
+        }
+
+
+        $gpus = $gPURepository->findAll();
+        $vendors = $vendorsRepository->findAll();
+        $products = $productsRepository->search($search, $selectedGpus, $selectedVendors, $selectedManufacturers, $selectedMemories, $selectedPCIVersions, $selectedCategories, $selectedMancountries, $selectedVencountries, $startPrice, $endPrice, $sortBy, $sortDir);
+
+        $names = [];
+        $views = [];
+        $ratings = [];
+        foreach ($products as $product) {
+            $names[] = $product->getVendor()->getName() . ' ' . $product->getGPU()->getName();
+            $views[] = $product->getViews();
+            $ratings[] = $product->getRating();
+        }
+
+        $orderDetails = $orderDetailsRepository->findAll();
+
+
+        foreach ($orderDetails as $orderDetail) {
+            if (in_array($orderDetail->getProduct(), $products)) {
+                // Get the product name
+                $productName = $orderDetail->getProduct()->getVendor()->getName() . ' ' . $orderDetail->getProduct()->getGPU()->getName();
+
+                // Get the quantity
+                $quantity = $orderDetail->getQuantity();
+
+                // If the product name already exists in the array, add the quantity to its existing sum
+                if (isset($productQuantities[$productName])) {
+                    $productQuantities[$productName] += $quantity;
+                } else {
+                    // If the product name doesn't exist in the array, initialize it with the quantity
+                    $productQuantities[$productName] = $quantity;
+                }
+            }
+        }
+
+        $manufacturers = $manufacturersRepository->findAll();
+        $memories = $memoryTypesRepository->findAll();
+        $pciversions = $pCIRepository->findAll();
+        $categories = $categoriesRepository->findAll();
+
+        $mancountries = array_map(function ($manufacturer) {
+            return $manufacturer->getCountry();
+        }, $manufacturers);
+
+        $vencountries = array_map(function ($vendor) {
+            return $vendor->getCountry();
+        }, $vendors);
+
+
         return $this->render('admin/index.html.twig', [
-            'controller_name' => 'AdminController',
+            'names' => $names,
+            'ratings' => $ratings,
+            'views' => $views,
+            'productQuantities' => $productQuantities,
+            'search' => $search,
+            'sort' => $sort,
+            'gpus' => $gpus,
+            'vendors' => $vendors,
+            'selectedGpus' => $selectedGpus,
+            'selectedVendors' => $selectedVendors,
+            'manufacturers' => $manufacturers,
+            'memories' => $memories,
+            'pciversions' => $pciversions,
+            'categories' => $categories,
+            'mancountries' => $mancountries,
+            'vencountries' => $vencountries,
+            'selectedManufacturers' => $selectedManufacturers,
+            'selectedMemories' => $selectedMemories,
+            'selectedPCIVersions' => $selectedPCIVersions,
+            'selectedCategories' => $selectedCategories,
+            'selectedManCountries' => $selectedMancountries,
+            'selectedVenCountries' => $selectedVencountries,
+            'startPrice' => $startPrice,
+            'endPrice' => $endPrice,
         ]);
     }
+
 
     /**
      * Create a new entity based on form type and template.
@@ -64,7 +156,7 @@ class AdminController extends AbstractController
         string $entityClass,
         string $formTypeClass,
         string $template,
-        string $redirectRoute = 'app_admin' // default redirect route
+        string $redirectRoute = 'statistic' // default redirect route
     ): Response {
         $entity = new $entityClass();
         $form = $this->createForm($formTypeClass, $entity);
@@ -105,56 +197,56 @@ class AdminController extends AbstractController
     #[Route('/admin/products/create', name: 'create_product')]
     public function createProduct(Request $request, ManagerRegistry $doctrine): Response
     {
-        return $this->createEntity($request, $doctrine, Products::class, ProductFormType::class, 'admin/create_form/create_product.html.twig');
+        return $this->createEntity($request, $doctrine, Products::class, ProductFormType::class, 'admin/create_form/create_form.html.twig');
     }
 
     #[Route('/admin/vendor/create', name: 'create_vendor')]
     public function createVendor(Request $request, ManagerRegistry $doctrine): Response
     {
-        return $this->createEntity($request, $doctrine, Vendors::class, VendorType::class, 'admin/create_form/create_vendor.html.twig');
+        return $this->createEntity($request, $doctrine, Vendors::class, VendorType::class, 'admin/create_form/create_form.html.twig');
     }
 
     #[Route('/admin/gpu/create', name: 'create_gpu')]
     public function createGPU(Request $request, ManagerRegistry $doctrine): Response
     {
-        return $this->createEntity($request, $doctrine, GPU::class, GPUType::class, 'admin/create_form/create_gpu.html.twig');
+        return $this->createEntity($request, $doctrine, GPU::class, GPUType::class, 'admin/create_form/create_form.html.twig');
     }
 
     #[Route('/admin/review/create', name: 'create_review')]
     public function createReview(Request $request, ManagerRegistry $doctrine): Response
     {
-        return $this->createEntity($request, $doctrine, Reviews::class, ReviewsType::class, 'admin/create_form/create_review.html.twig');
+        return $this->createEntity($request, $doctrine, Reviews::class, ReviewsType::class, 'admin/create_form/create_form.html.twig');
     }
 
     #[Route('/admin/category/create', name: 'create_category')]
     public function createCategory(Request $request, ManagerRegistry $doctrine): Response
     {
-        return $this->createEntity($request, $doctrine, Categories::class, CategoryType::class, 'admin/create_form/create_category.html.twig');
+        return $this->createEntity($request, $doctrine, Categories::class, CategoryType::class, 'admin/create_form/create_form.html.twig');
     }
     #[Route('/admin/manufacturer/create', name: 'create_manufacturer')]
     public function createManufacturer(Request $request, ManagerRegistry $doctrine): Response
     {
-        return $this->createEntity($request, $doctrine, Manufacturers::class, ManufacturerType::class, 'admin/create_form/create_manufacturer.html.twig');
+        return $this->createEntity($request, $doctrine, Manufacturers::class, ManufacturerType::class, 'admin/create_form/create_form.html.twig');
     }
     #[Route('/admin/memorytype/create', name: 'create_memorytype')]
     public function createMemoryType(Request $request, ManagerRegistry $doctrine): Response
     {
-        return $this->createEntity($request, $doctrine, MemoryTypes::class, MemoryType::class, 'admin/create_form/create_memorytype.html.twig');
+        return $this->createEntity($request, $doctrine, MemoryTypes::class, MemoryType::class, 'admin/create_form/create_form.html.twig');
     }
     #[Route('/admin/orderdetails/create', name: 'create_orderdetails')]
     public function createOrderDetails(Request $request, ManagerRegistry $doctrine): Response
     {
-        return $this->createEntity($request, $doctrine, OrderDetails::class, OrderDetailsType::class, 'admin/create_form/create_orderdetails.html.twig');
+        return $this->createEntity($request, $doctrine, OrderDetails::class, OrderDetailsType::class, 'admin/create_form/create_form.html.twig');
     }
     #[Route('/admin/order/create', name: 'create_order')]
     public function createOrder(Request $request, ManagerRegistry $doctrine): Response
     {
-        return $this->createEntity($request, $doctrine, Orders::class, OrderType::class, 'admin/create_form/create_order.html.twig');
+        return $this->createEntity($request, $doctrine, Orders::class, OrderType::class, 'admin/create_form/create_form.html.twig');
     }
     #[Route('/admin/pci/create', name: 'create_pci')]
     public function createPCI(Request $request, ManagerRegistry $doctrine): Response
     {
-        return $this->createEntity($request, $doctrine, PCI::class, PCIType::class, 'admin/create_form/create_pci.html.twig');
+        return $this->createEntity($request, $doctrine, PCI::class, PCIType::class, 'admin/create_form/create_form.html.twig');
     }
 
 
@@ -162,13 +254,20 @@ class AdminController extends AbstractController
 
     // ================Products================
     #[Route('/admin/products', name: 'products_view', methods: ['GET', 'HEAD'])]
-    public function viewProduct(ProductsRepository $productsRepository, VendorsRepository $vendorsRepository, GPURepository $gPURepository, Request $request)
+    public function viewProduct(ManufacturersRepository $manufacturersRepository, MemoryTypesRepository $memoryTypesRepository, PCIRepository $pCIRepository, CategoriesRepository $categoriesRepository, ProductsRepository $productsRepository, VendorsRepository $vendorsRepository, GPURepository $gPURepository, Request $request)
     {
-
         $search = $request->query->get('search');
-        $selectedGpu = $request->query->get('gpu');
-        $selectedVendor = $request->query->get('vendor');
+        $selectedGpus = $request->query->all()['gpus'] ?? null;
+        $selectedVendors = $request->query->all()['vendors'] ?? null;
+        $selectedManufacturers = $request->query->all()['manufacturers'] ?? null;
+        $selectedMemories = $request->query->all()['memories'] ?? null;
+        $selectedPCIVersions = $request->query->all()['pciversions'] ?? null;
+        $selectedCategories = $request->query->all()['categories'] ?? null;
+        $selectedMancountries = $request->query->all()['mancountries'] ?? null;
+        $selectedVencountries = $request->query->all()['vencountries'] ?? null;
         $sort = $request->query->get('sort');
+        $startPrice = $request->query->get('startPrice');
+        $endPrice = $request->query->get('endPrice');
         if ($sort === null) {
             $sortBy = 'id';
             $sortDir = 'asc';
@@ -179,7 +278,20 @@ class AdminController extends AbstractController
 
         $gpus = $gPURepository->findAll();
         $vendors = $vendorsRepository->findAll();
-        $products = $productsRepository->search($search, $selectedGpu, $selectedVendor, $sortBy, $sortDir);
+        $products = $productsRepository->search($search, $selectedGpus, $selectedVendors, $selectedManufacturers, $selectedMemories, $selectedPCIVersions, $selectedCategories, $selectedMancountries, $selectedVencountries, $startPrice, $endPrice, $sortBy, $sortDir);
+
+        $manufacturers = $manufacturersRepository->findAll();
+        $memories = $memoryTypesRepository->findAll();
+        $pciversions = $pCIRepository->findAll();
+        $categories = $categoriesRepository->findAll();
+
+        $mancountries = array_map(function ($manufacturer) {
+            return $manufacturer->getCountry();
+        }, $manufacturers);
+
+        $vencountries = array_map(function ($vendor) {
+            return $vendor->getCountry();
+        }, $vendors);
 
 
         return $this->render('admin/view/products.html.twig', [
@@ -188,8 +300,22 @@ class AdminController extends AbstractController
             'sort' => $sort,
             'gpus' => $gpus,
             'vendors' => $vendors,
-            'selectedGpu' => $selectedGpu,
-            'selectedVendor' => $selectedVendor,
+            'selectedGpus' => $selectedGpus,
+            'selectedVendors' => $selectedVendors,
+            'manufacturers' => $manufacturers,
+            'memories' => $memories,
+            'pciversions' => $pciversions,
+            'categories' => $categories,
+            'mancountries' => $mancountries,
+            'vencountries' => $vencountries,
+            'selectedManufacturers' => $selectedManufacturers,
+            'selectedMemories' => $selectedMemories,
+            'selectedPCIVersions' => $selectedPCIVersions,
+            'selectedCategories' => $selectedCategories,
+            'selectedManCountries' => $selectedMancountries,
+            'selectedVenCountries' => $selectedVencountries,
+            'startPrice' => $startPrice,
+            'endPrice' => $endPrice,
         ]);
     }
     #[Route('/admin/products/delete/{id}', name: 'delete_product')]
@@ -222,13 +348,25 @@ class AdminController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $uploadedFile = $form->get('image')->getData();
+
+            if ($uploadedFile) {
+                // Generate a unique name for the file
+                $newFilename = uniqid() . '.' . $uploadedFile->guessExtension();
+
+                // Move the file to the directory where images are stored
+                $uploadedFile->move('images', $newFilename);
+
+                // Update the 'image' property of the entity
+                $product->setImage($newFilename);
+            }
             $entityManager->flush();
 
             // Redirect to a success page or do something else
             return $this->redirectToRoute('products_view');
         }
 
-        return $this->render('admin/create_form/create_product.html.twig', [
+        return $this->render('admin/create_form/create_form.html.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -289,7 +427,7 @@ class AdminController extends AbstractController
             return $this->redirectToRoute('vendors_view');
         }
 
-        return $this->render('admin/create_form/create_vendor.html.twig', [
+        return $this->render('admin/create_form/create_form.html.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -326,13 +464,13 @@ class AdminController extends AbstractController
             'sort' => $sort,
             'Smanufacturer' => $manufacturer,
             'manufacturers' => $manufacturers,
-            'Spci'=> $pci,
-            'pcis'=> $pcis,
-            'Scategory'=> $category, 
-            'categories'=> $categories,
-            'memoryTypes'=> $memoryTypes,
-            'Smemory'=> $memory,
-            
+            'Spci' => $pci,
+            'pcis' => $pcis,
+            'Scategory' => $category,
+            'categories' => $categories,
+            'memoryTypes' => $memoryTypes,
+            'Smemory' => $memory,
+
         ]);
     }
     #[Route('/admin/gpus/delete/{id}', name: 'delete_gpu')]
@@ -369,7 +507,7 @@ class AdminController extends AbstractController
             return $this->redirectToRoute('gpus_view');
         }
 
-        return $this->render('admin/create_form/create_gpu.html.twig', [
+        return $this->render('admin/create_form/create_form.html.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -429,7 +567,7 @@ class AdminController extends AbstractController
             return $this->redirectToRoute('manufacturers_view');
         }
 
-        return $this->render('admin/create_form/create_manufacturer.html.twig', [
+        return $this->render('admin/create_form/create_form.html.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -482,7 +620,7 @@ class AdminController extends AbstractController
             return $this->redirectToRoute('categories_view');
         }
 
-        return $this->render('admin/create_form/create_category.html.twig', [
+        return $this->render('admin/create_form/create_form.html.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -542,7 +680,7 @@ class AdminController extends AbstractController
             return $this->redirectToRoute('memories_view');
         }
 
-        return $this->render('admin/create_form/create_memory.html.twig', [
+        return $this->render('admin/create_form/create_form.html.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -601,7 +739,7 @@ class AdminController extends AbstractController
             return $this->redirectToRoute('pcies_view');
         }
 
-        return $this->render('admin/create_form/create_pci.html.twig', [
+        return $this->render('admin/create_form/create_form.html.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -637,14 +775,23 @@ class AdminController extends AbstractController
     #[Route('/admin/reviews/delete/{id}', name: 'delete_review')]
     public function deleteReview(ReviewsRepository $reviewsRepository, ManagerRegistry $doctrine, $id): Response
     {
-        $reviews = $reviewsRepository->find($id);
+        $review = $reviewsRepository->find($id);
 
-        if (!$reviews) {
+        if (!$review) {
             throw $this->createNotFoundException('Review not found');
         }
+        $product = $review->getProduct();
+        $reviews = $reviewsRepository->findByProductId($product->getId(), 'asc');
+        $avgRate = -1 * $review->getRating();
+        $doctrine->getManager()->remove($review);
 
-        // Remove the product
-        $doctrine->getManager()->remove($reviews);
+
+        foreach ($reviews as $rate) {
+            $avgRate += $rate->getRating();
+        }
+        $avgRate /= count($reviews) - 1;
+
+        $product->setRating($avgRate);
         $doctrine->getManager()->flush();
 
         // Redirect to a success page or do something else
@@ -669,7 +816,7 @@ class AdminController extends AbstractController
             return $this->redirectToRoute('reviews_view');
         }
 
-        return $this->render('admin/create_form/create_review.html.twig', [
+        return $this->render('admin/create_form/create_form.html.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -691,13 +838,12 @@ class AdminController extends AbstractController
         }
 
         $orders = $ordersRepository->search($orderIds, $sortBy, $sortDir);
+        $orderDetails = $orderDetailsRepository->findAll();
 
-
-        
-        // $ordersDetails = $orderDetailsRepository->search($search);
 
         return $this->render('admin/view/orders.html.twig', [
             'orders' => $orders,
+            'orderDetails' => $orderDetails,
             'search' => $search,
             'sort' => $sort
         ]);

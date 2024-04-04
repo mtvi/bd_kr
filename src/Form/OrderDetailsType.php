@@ -23,7 +23,7 @@ class OrderDetailsType extends AbstractType
                 'class' => 'App\Entity\Products',
                 'choice_label' => 'id',
             ])
-            ->add('save', SubmitType::class, ['label' => 'Create Product']);
+            ->add('save', SubmitType::class, ['label' => 'Save']);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

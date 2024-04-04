@@ -19,6 +19,12 @@ class Orders
     #[ORM\Column(length: 255)]
     private ?string $CustomerName = null;
 
+    #[ORM\Column(length: 50)]
+    private ?string $Email = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $Address = null;
+
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $OrderDate = null;
 
@@ -49,6 +55,31 @@ class Orders
 
         return $this;
     }
+
+    // 
+    public function getEmail(): ?string
+    {
+        return $this->Email;
+    }
+
+    public function setEmail(string $Email): static
+    {
+        $this->Email = $Email;
+
+        return $this;
+    }
+    public function getAddress(): ?string
+    {
+        return $this->Address;
+    }
+
+    public function setAddress(string $Address): static
+    {
+        $this->Address = $Address;
+
+        return $this;
+    }
+    // 
 
     public function getOrderDate(): ?\DateTimeInterface
     {

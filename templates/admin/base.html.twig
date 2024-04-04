@@ -1,0 +1,46 @@
+
+<div class="d-flex justify-content-center">
+	<ul class="nav nav-tabs">
+		<li class="nav-item">
+			<a class="nav-link text-dark {% if app.request.attributes.get('_route') == 'statistic'%} active {%endif%}"  href="{{ path('statistic') }}">Stats</a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link text-dark{% if app.request.attributes.get('_route') == 'products_view'%} active {%endif%}" href="{{ path('products_view') }}">Products</a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link text-dark{% if app.request.attributes.get('_route') == 'vendors_view'%} active {%endif%}" href="{{ path('vendors_view') }}">Vendors</a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link text-dark{% if app.request.attributes.get('_route') == 'gpus_view'%} active {%endif%}" href="{{ path('gpus_view') }}">GPUs</a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link text-dark{% if app.request.attributes.get('_route') == 'categories_view'%} active {%endif%}" href="{{ path('categories_view') }}">Categories</a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link text-dark{% if app.request.attributes.get('_route') == 'manufacturers_view'%} active {%endif%}" href="{{ path('manufacturers_view') }}">Manufacturers</a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link text-dark{% if app.request.attributes.get('_route') == 'memories_view'%} active {%endif%}" href="{{ path('memories_view') }}">Memories</a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link text-dark{% if app.request.attributes.get('_route') == 'orders_view'%} active {%endif%}" href="{{ path('orders_view') }}">Orders</a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link text-dark{% if app.request.attributes.get('_route') == 'pcies_view'%} active {%endif%}" href="{{ path('pcies_view') }}">PCIes</a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link text-dark{% if app.request.attributes.get('_route') == 'reviews_view'%} active {%endif%}" href="{{ path('reviews_view') }}">Reviews</a>
+		</li>
+	</ul>
+</div>
+
+{# <a href="{{ path('create_product') }}">create_product</a><br>
+<a href="{{ path('create_vendor') }}">create_vendor</a><br>
+<a href="{{ path('create_gpu') }}">create_gpu</a><br>
+<a href="{{ path('create_review') }}">create_review</a><br>
+<a href="{{ path('create_category') }}">create_category</a><br>
+<a href="{{ path('create_manufacturer') }}">create_manufacturer</a><br>
+<a href="{{ path('create_memorytype') }}">create_memorytype</a><br>
+<a href="{{ path('create_orderdetails') }}">create_orderdetails</a><br>
+<a href="{{ path('create_order') }}">create_order</a><br>
+<a href="{{ path('create_pci') }}">create_pci</a><br> #}

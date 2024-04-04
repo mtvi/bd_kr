@@ -5,261 +5,259 @@
 {% endblock %}
 
 {% block body %}
-	<a href="{{ path('create_gpu') }}">
-		Create gpu
+	{% include 'admin/base.html.twig' %}
 
-	</a>
-	<br>
-	<h1>
-		List of GPUs
-
-	</h1>
 	<form id="searchForm" method="get" action="{{ path('gpus_view') }}">
-		<label for="search">
-			Search:
-
-		</label>
-		<input type="text" placeholder="Пошук" id="search" name="search" value="{{ search }}">
-		<label for="manufacturer">
-			manufacturer:
-
-		</label>
-		<select id="manufacturer" name="manufacturer">
-			<option value="">
-				All manufacturers
-
-			</option>
-			{# Populate GPU options based on your data #}
-			{% for manufacturer in manufacturers %}
-				<option value="{{ manufacturer.id }}" {% if manufacturer.id == Smanufacturer %} selected {% endif %}>
-					{{ manufacturer.ManufacturerName }}
-				</option>
-			{% endfor %}
-		</select>
-		<label for="memory">
-			Memory Types:
-
-		</label>
-		<select id="memory" name="memory">
-			<option value="">
-				All memories
-
-			</option>
-			{# Populate Vendor options based on your data #}
-			{% for memory in memoryTypes %}
-				<option value="{{ memory.id }}" {% if memory.id == Smemory %} selected {% endif %}>
-					{{ memory.Type }}
-				</option>
-			{% endfor %}
-		</select>
-
-		<label for="pcis">
-			pcis:
-
-		</label>
-		<select id="pcis" name="v">
-			<option value="">
-				All pcis
-
-			</option>
-			{# Populate Vendor options based on your data #}
-			{% for pci in pcis %}
-				<option value="{{ pci.id }}" {% if pci.id == Spci %} selected {% endif %}>
-					{{ pci.Version }}
-				</option>
-			{% endfor %}
-		</select>
-
-		<label for="categories">
-			categories:
-
-		</label>
-		<select id="categories" name="categories">
-			<option value="">
-				All categories
-
-			</option>
-			{# Populate Vendor options based on your data #}
-			{% for category in categories %}
-				<option value="{{ category.id }}" {% if category.id == Scategory %} selected {% endif %}>
-					{{ category.CategoryName }}
-				</option>
-			{% endfor %}
-		</select>
-
-		<label for="sort">
-			Sort by Price:
-
-		</label>
-		<select id="sort" name="sort">
-			<option value="id asc" {% if sort == 'id asc' %} selected {% endif %}>
-				ID Ascending
-
-			</option>
-			<option value="id desc" {% if sort == 'id desc' %} selected {% endif %}>
-				ID Descending
-
-			</option>
-			<option value="CoreClock asc" {% if sort == 'CoreClock asc' %} selected {% endif %}>
-				CoreClock Ascending
-
-			</option>
-			<option value="CoreClock desc" {% if sort == 'CoreClock desc' %} selected {% endif %}>
-				CoreClock Descending
-
-			</option>
-			<option value="BoostClock asc" {% if sort == 'BoostClock asc' %} selected {% endif %}>
-            BoostClock Ascending
-
-			</option>
-			<option value="BoostClock desc" {% if sort == 'BoostClock desc' %} selected {% endif %}>
-            BoostClock Descending
-
-			</option>
-			<option value="VRAM asc" {% if sort == 'VRAM asc' %} selected {% endif %}>
-            VRAM Ascending
-
-			</option>
-			<option value="VRAM desc" {% if sort == 'VRAM desc' %} selected {% endif %}>
-            VRAM Descending
-
-			</option>
-			<option value="TDP asc" {% if sort == 'TDP asc' %} selected {% endif %}>
-            TDP Ascending
-
-			</option>
-			<option value="TDP desc" {% if sort == 'TDP desc' %} selected {% endif %}>
-            TDP Descending
-
-			</option>
-
-			<option value="ReleaseDate asc" {% if sort == 'ReleaseDate asc' %} selected {% endif %}>
-				GPU Date Ascending
-
-			</option>
-			<option value="ReleaseDate desc" {% if sort == 'ReleaseDate desc' %} selected {% endif %}>
-				GPU Date Descending
-
-			</option>
-		</select>
-		<button type="submit">
-			Search
-
-		</button>
-	</form>
-	<a href="{{ path('gpus_view') }}">
-		clear search
-
-	</a>
-	<br>
-	<table>
-		<thead>
-			<tr>
-				<th>
-					ID
-
-				</th>
-				<th>
-					Manufacturer
-
-				</th>
-				<th>
-					Name
-
-				</th>
-				<th>
-					Release Date
-
-				</th>
-				<th>
-					CoreClock
-
-				</th>
-                <th>
-					BoostClock
-
-				</th>
-                <th>
-					VRAM
-
-				</th>
-                <th>
-					TDP
-
-				</th>
-                <th>
-					Memory
-
-				</th>
-                <th>
-					PCI
-
-				</th>
-                <th>
-					Category
-
-				</th>
-				<th>
-					Delete
-
-				</th>
-				<th>
-					Edit
-
-				</th>
-			</tr>
-		</thead>
-		<tbody>
-			{% for gpu in gpus %}
-				<tr>
-
-					<td>
-						{{ gpu.id }}
-					</td>
-					<td>
-						{{ gpu.Manufacturer.ManufacturerName }}
-					</td>
-					<td>
-						{{ gpu.Name }}
-					</td>
-					<td>
-						{{ gpu.ReleaseDate|date('Y-m-d') }}
-					</td>
-					<td>
-						{{ gpu.CoreClock }}
-					</td>
-                    <td>
-						{{ gpu.BoostClock }}
-					</td>
-                    <td>
-						{{ gpu.VRAM }}
-					</td>
-                    <td>
-						{{ gpu.TDP }}
-					</td>
-                    <td>
-						{{ gpu.Memory.Type }}
-					</td>
-                    <td>
-						{{ gpu.PCIVersion.Version }}
-					</td>
-                    <td>
-						{{ gpu.Category.CategoryName }}
-					</td>
-					<td>
-						<a href="{{ path('delete_gpu', { 'id': gpu.id }) }}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this product?')">
-							Delete GPU
-
+		<div class="container mt-5">
+			<div class="row">
+				<div class="col-md-2">
+					<div class="form-group">
+						<a class="btn btn-dark form-control" href="{{ path('create_gpu') }}">
+							Create GPU
 						</a>
-					</td>
-					<td>
-						<a href="{{ path('edit_gpu', { 'id': gpu.id }) }}" class="btn btn-success">
-							Edit GPU
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<input type="text" class="form-control" id="search" name="search" value="{{ search }}" placeholder="Search">
+					</div>
+				</div>
+				<div class="col-md-2">
+					<div class="form-group">
+						<select class="form-select " id="sort" name="sort">
+							<option value="id asc" {% if sort == 'id asc' %} selected {% endif %}>
+								ID Ascending
 
-						</a>
-					</td>
-				</tr>
-			{% endfor %}
-		</tbody>
-	</table>
-</body></html>{% endblock %}
+							</option>
+							<option value="id desc" {% if sort == 'id desc' %} selected {% endif %}>
+								ID Descending
+
+							</option>
+							<option value="CoreClock asc" {% if sort == 'CoreClock asc' %} selected {% endif %}>
+								CoreClock Ascending
+
+							</option>
+							<option value="CoreClock desc" {% if sort == 'CoreClock desc' %} selected {% endif %}>
+								CoreClock Descending
+
+							</option>
+							<option value="BoostClock asc" {% if sort == 'BoostClock asc' %} selected {% endif %}>
+								BoostClock Ascending
+
+							</option>
+							<option value="BoostClock desc" {% if sort == 'BoostClock desc' %} selected {% endif %}>
+								BoostClock Descending
+
+							</option>
+							<option value="VRAM asc" {% if sort == 'VRAM asc' %} selected {% endif %}>
+								VRAM Ascending
+
+							</option>
+							<option value="VRAM desc" {% if sort == 'VRAM desc' %} selected {% endif %}>
+								VRAM Descending
+
+							</option>
+							<option value="TDP asc" {% if sort == 'TDP asc' %} selected {% endif %}>
+								TDP Ascending
+
+							</option>
+							<option value="TDP desc" {% if sort == 'TDP desc' %} selected {% endif %}>
+								TDP Descending
+
+							</option>
+
+							<option value="ReleaseDate asc" {% if sort == 'ReleaseDate asc' %} selected {% endif %}>
+								GPU Date Ascending
+
+							</option>
+							<option value="ReleaseDate desc" {% if sort == 'ReleaseDate desc' %} selected {% endif %}>
+								GPU Date Descending
+
+							</option>
+						</select>
+					</div>
+				</div>
+				<div class="col-md-2">
+					<div class="form-group">
+						<button type="submit" class="btn btn-success form-control">Search</button>
+					</div>
+				</div>
+
+
+			</div>
+			<div class="row mt-3">
+				<div class="col-md-3">
+					<h3>Filters</h3>
+
+					<div class="form-group">
+						<label for="manufacturer">Manufacturer:</label>
+						<select id="manufacturer" name="manufacturer" class="form-control">
+							<option value="">All manufacturers</option>
+							{% for manufacturer in manufacturers %}
+								<option value="{{ manufacturer.id }}" {% if manufacturer.id == Smanufacturer %} selected {% endif %}>
+									{{ manufacturer.ManufacturerName }}
+								</option>
+							{% endfor %}
+						</select>
+					</div>
+
+					<div class="form-group">
+						<label for="memory">Memory Types:</label>
+						<select id="memory" name="memory" class="form-control">
+							<option value="">All memories</option>
+							{% for memory in memoryTypes %}
+								<option value="{{ memory.id }}" {% if memory.id == Smemory %} selected {% endif %}>
+									{{ memory.Type }}
+								</option>
+							{% endfor %}
+						</select>
+					</div>
+
+					<div class="form-group">
+						<label for="pcis">PCIs:</label>
+						<select id="pcis" name="pcis" class="form-control">
+							<option value="">All PCIs</option>
+							{% for pci in pcis %}
+								<option value="{{ pci.id }}" {% if pci.id == Spci %} selected {% endif %}>
+									{{ pci.Version }}
+								</option>
+							{% endfor %}
+						</select>
+					</div>
+
+					<div class="form-group">
+						<label for="categories">Categories:</label>
+						<select id="categories" name="categories" class="form-control">
+							<option value="">All categories</option>
+							{% for category in categories %}
+								<option value="{{ category.id }}" {% if category.id == Scategory %} selected {% endif %}>
+									{{ category.CategoryName }}
+								</option>
+							{% endfor %}
+						</select>
+					</div>
+
+
+				</div>
+				<div class="col-md-9">
+
+
+					<div class="row">
+						<table class="table table-striped table-hover table-sm align-middle">
+							<thead>
+								<tr>
+									<th>
+										ID
+
+									</th>
+									<th>
+										Manufacturer
+
+									</th>
+									<th>
+										Name
+
+									</th>
+									<th>
+										Release Date
+
+									</th>
+									<th>
+										CoreClock
+
+									</th>
+									<th>
+										BoostClock
+
+									</th>
+									<th>
+										VRAM
+
+									</th>
+									<th>
+										TDP
+
+									</th>
+									<th>
+										Memory
+
+									</th>
+									<th>
+										PCI
+
+									</th>
+									<th>
+										Category
+
+									</th>
+									<th>
+										Delete
+
+									</th>
+									<th>
+										Edit
+
+									</th>
+								</tr>
+							</thead>
+							<tbody class="table-group-divider">
+								{% for gpu in gpus %}
+									<tr>
+
+										<td>
+											{{ gpu.id }}
+										</td>
+										<td>
+											{{ gpu.Manufacturer.ManufacturerName }}
+										</td>
+										<td>
+											{{ gpu.Name }}
+										</td>
+										<td>
+											{{ gpu.ReleaseDate|date('Y-m-d') }}
+										</td>
+										<td>
+											{{ gpu.CoreClock }} MHz
+										</td>
+										<td>
+											{{ gpu.BoostClock }} MHz
+										</td>
+										<td>
+											{{ gpu.VRAM }} Gb
+										</td>
+										<td>
+											{{ gpu.TDP }} W
+										</td>
+										<td>
+											{{ gpu.Memory.Type }} 
+										</td>
+										<td>
+											{{ gpu.PCIVersion.Version }} 
+										</td>
+										<td>
+											{{ gpu.Category.CategoryName }}
+										</td>
+										<td>
+											<a href="{{ path('delete_gpu', { 'id': gpu.id }) }}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this product?')">
+												&#10005;
+
+											</a>
+										</td>
+										<td>
+											<a href="{{ path('edit_gpu', { 'id': gpu.id }) }}" class="btn btn-success">
+												&#9998;
+
+											</a>
+										</td>
+
+
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+
+				</div>
+			</form>
+
+{% endblock %}

@@ -37,7 +37,9 @@ class OrderDetailsRepository extends ServiceEntityRepository
         $qb->where(
             $qb->expr()->orX(
                 $qb->expr()->like('LOWER(' . $nameConcat . ')', ':value'),
-                $qb->expr()->like('LOWER(o.CustomerName)', ':value')
+                $qb->expr()->like('LOWER(o.CustomerName)', ':value'),
+                $qb->expr()->like('LOWER(o.Address)', ':value'),
+                $qb->expr()->like('LOWER(o.Email)', ':value')
             )
         )
             ->setParameter('value', '%' . $value . '%');

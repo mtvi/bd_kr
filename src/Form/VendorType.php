@@ -16,7 +16,7 @@ class VendorType extends AbstractType
             ->add('Name')
             ->add('Website')
             ->add('Country')
-            ->add('save', SubmitType::class, ['label' => 'Create Vendor']);
+            ->add('save', SubmitType::class, ['label' => 'Save']);
         ;
     }
 

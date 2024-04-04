@@ -2,39 +2,140 @@
 
 {% extends 'base.html.twig' %}
 
-{% block title %}View Cart{% endblock %}
+{% block title %}View Cart
+{% endblock %}
 
 {% block body %}
-    <h1>Your Cart</h1>
+	<section class="h-100">
+		<div class="container py-5">
+			<div class="row d-flex justify-content-center my-4">
+				<div class="col-md-8">
+					<div class="card mb-4">
+						<div class="card-header py-3">
+							<h5 class="mb-0">Cart -
+								{{cartData|length}}
+								items
+								<a href="{{ path('clear_cart') }}">Clear Cart</a>
+							</h5>
+						</div>
 
-    {% if cartData|length > 0 %}
-        <table>
-            <thead>
-                <tr>
-                    <th>Product</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>Total</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for product in cartData %}
-                    <tr>
-                        <td>{{ product.vendor.name }} {{ product.GPU.name  }}</td>
-                        <td>{{ product.price }} UAH</td>
-                        <td>{{ product.quantity }}</td>
-                        <td>{{ product.price * product.quantity }} UAH</td>
-                        <td>
-                            <a href="{{ path('remove_from_cart', { 'id': product.id }) }}">Remove</a>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <a href="{{ path('clear_cart') }}">Clear Cart</a>
-        <a href="{{ path('create_order') }}">Create Order</a>
-    {% else %}
-        <p>Your cart is empty.</p>
-    {% endif %}
-{% endblock %}
+						{% if cartData|length > 0%}
+							<div class="card-body">
+								{% for product in cartData %}
+
+									<div class="row">
+										<div
+											class="col-lg-3 col-md-12 mb-4 mb-lg-0">
+											<!-- Image -->
+											<div class="bg-image hover-overlay ripple rounded" data-mdb-ripple-color="light">
+												<img src="{{ asset('images/' ~ product.image) }}" class="w-100" alt="{{ product.vendor.name ~ ' ' ~ product.GPU.name }}"/>
+												<div class="mask" style="background-color: rgba(251, 251, 251, 0.2)"></div>
+											</a>
+										</div>
+										<!-- Image -->
+									</div>
+
+									<div
+										class="col-lg-5 col-md-6 mb-4 mb-lg-0 fs-5">
+										<!-- Data -->
+										<p>
+											<strong>{{ product.vendor.name ~ ' ' ~ product.GPU.name }}</strong>
+										</p>
+										<p>Category:
+											{{product.GPU.category.categoryname}}</p>
+										<p>Price:
+																																																													${{product.price}}</p>
+
+
+										<!-- Data -->
+									</div>
+
+									<div
+										class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+										<!-- Quantity -->
+										<div class="d-flex mb-4" style="max-width: 300px">
+
+											<a href="{{ path('remove_from_cart', { 'id': product.id }) }}" class="btn btn-primary px-3 me-2">-</a>
+
+											<div class="form-outline">
+												<label class="form-control">
+													{{product.quantity}}
+												</label>
+											</div>
+
+											<a href="{{ path('add_to_cart', {'id': product.id}) }}" class="btn btn-primary px-3 ms-2">+</a>
+										</div>
+										<!-- Quantity -->
+
+										<!-- Price -->
+										<p class="text-start text-md-center me-4 fs-4">
+											Total:
+											<strong>${{ product.price * product.quantity }}</strong>
+										</p>
+										<!-- Price -->
+									</div>
+								</div>
+								<!-- Single item -->
+
+								<hr class="my-4"/>
+							{% endfor %}
+
+						</div>
+					{% else %}
+						<a href="{{ path('products_list') }}" class="ms-3 mt-2 fs-5 mb-2">Back to shopping</a>
+					{% endif %}
+				</div>
+				<div class="card mb-4">
+					<div class="card-body">
+						<p>
+							<strong>Expected shipping delivery</strong>
+						</p>
+						<p class="mb-0">{{date()|date_modify('+1 days')|date('d-m-Y')}}
+							-
+							{{date()|date_modify('+4 days')|date('d-m-Y')}}</p>
+					</div>
+				</div>
+				<div class="card mb-4 mb-lg-0">
+					<div class="card-body">
+						<p>
+							<strong>We accept</strong>
+						</p>
+						<img class="me-2" width="45px" src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/visa.svg" alt="Visa"/>
+						<img class="me-2" width="45px" src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/mastercard.svg" alt="Mastercard"/>
+						<img class="me-2" width="45px" src="https://habrastorage.org/getpro/moikrug/uploads/company/467/956/272/logo/medium_a5adb42f10b8c8fd1f092843dfb2d5e9.png" alt="PrivatBank"/>
+						<img class="me-2 rounded" width="45px" src="https://asset.brandfetch.io/id-CBRc8NA/idEsOSs4jS.jpeg" alt="Monobank"/>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="card mb-4">
+					<div class="card-header py-3">
+						<h5 class="mb-0">Summary</h5>
+					</div>
+					<div class="card-body">
+						<ul class="list-group list-group-flush">
+							<li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
+								Products
+								<span>${{totalPrice}}</span>
+							</li>
+							<li class="list-group-item d-flex justify-content-between align-items-center px-0">
+								Shipping
+								<span>Free</span>
+							</li>
+							<li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3 fs-5">
+								<div>
+									<strong>Total amount</strong>
+
+								</div>
+								<span>
+									<strong>${{totalPrice}}</strong>
+								</span>
+							</li>
+						</ul>
+						<a class="btn btn-dark btn-lg btn-block w-100 {% if cartData|length == 0%} disabled" aria-disabled="true" {% else %} "{% endif %} href=" {{ path('cart_continue') }} ">Continue</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>{% endblock %}

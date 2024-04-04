@@ -31,6 +31,15 @@ class Products
     #[ORM\Column(length: 255)]
     private ?string $CoolingType = null;
 
+    #[ORM\Column()]
+    private ?int $Views = 0;
+
+    #[ORM\Column()]
+    private ?int $Quantity = 0;
+
+    #[ORM\Column()]
+    private ?float $Rating = 0;
+
     #[ORM\OneToMany(mappedBy: 'Product', targetEntity: OrderDetails::class)]
     private Collection $orderDetails;
 
@@ -104,6 +113,54 @@ class Products
     public function setCoolingType(string $CoolingType): static
     {
         $this->CoolingType = $CoolingType;
+
+        return $this;
+    }
+
+    public function getQuantity(): ?int
+    {
+        return $this->Quantity;
+    }
+
+    public function setQuantity(int $Quantity): static
+    {
+        $this->Quantity = $Quantity;
+
+        return $this;
+    }
+
+    public function getViews(): ?int
+    {
+        return $this->Views;
+    }
+
+    public function setViews(int $Views): static
+    {
+        $this->Views = $Views;
+
+        return $this;
+    }
+    public function setView(): static
+    {
+        $this->Views += 1;
+
+        return $this;
+    }
+    public function Ordered(int $order): static
+    {
+        $this->Quantity -= $order;
+
+        return $this;
+    }
+
+    public function getRating(): ?float
+    {
+        return $this->Rating;
+    }
+
+    public function setRating(float $Rating): static
+    {
+        $this->Rating = $Rating;
 
         return $this;
     }

@@ -4,6 +4,7 @@
 
 {% endblock %}
 {% block stylesheets %}
+
 	{# Add the following style block to set the image dimensions #}
 	<style>
 		img.product-image {
@@ -13,152 +14,99 @@
 	</style>
 {% endblock %}
 {% block body %}
-	<a href="{{ path('create_review') }}">
-		Create Review
+	{% include 'admin/base.html.twig' %}
 
-	</a>
-	<br>
-	<h1>
-		List of Reviews
-
-	</h1>
 	<form id="searchForm" method="get" action="{{ path('reviews_view') }}">
-		<label for="search">
-			Search Reviewer / Review Text:
+		<div class="container mt-5">
+			<div class="row">
+				<div class="col-md-2">
+					<div class="form-group">
+						<a class="btn btn-dark form-control" href="{{ path('create_review') }}">
+							Create Review
+						</a>
+					</div>
+				</div>
+				<div class="col-md-5">
+					<div class="form-group">
+						<input type="text" class="form-control" id="search" name="search" value="{{ search }}" placeholder="Search">
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="form-group">
+						<select class="form-select" id="sort" name="sort">
+							<option value="id asc" {% if sort == 'id asc' %} selected {% endif %}>
+								ID Ascending
+							</option>
+							<option value="id desc" {% if sort == 'id desc' %} selected {% endif %}>
+								ID Descending
+							</option>
+							<option value="Rating asc" {% if sort == 'Rating asc' %} selected {% endif %}>
+								Rating Ascending
+							</option>
+							<option value="Rating desc" {% if sort == 'Rating desc' %} selected {% endif %}>
+								Rating Descending
+							</option>
+							<option value="ReviewDate asc" {% if sort == 'ReviewDate asc' %} selected {% endif %}>
+								Review Date Ascending
+							</option>
+							<option value="ReviewDate desc" {% if sort == 'ReviewDate desc' %} selected {% endif %}>
+								Review Date Descending
+							</option>
+						</select>
+					</div>
+				</div>
+				<div class="col-md-2">
+					<div class="form-group">
+						<button type="submit" class="btn btn-success form-control">Search</button>
+					</div>
+				</div>
+			</div>
 
-		</label>
-		<input type="text" placeholder="Пошук" id="search" name="search" value="{{ search }}">
-		<label for="gpu">
-			GPU:
-
-		</label>
-		<select id="product" name="product">
-			<option value="">
-				All Products
-
-			</option>
-			{# Populate GPU options based on your data #}
-			{% for product in products %}
-				<option value="{{ product.id }}" {% if product.id == Sproduct %} selected {% endif %}>
-					{{ product.vendor.name }}
-					{{ product.GPU.name  }}
-				</option>
-			{% endfor %}
-		</select>
-
-		<label for="sort">
-			Sort:
-
-		</label>
-		<select id="sort" name="sort">
-			<option value="id asc" {% if sort == 'id asc' %} selected {% endif %}>
-				ID Ascending
-
-			</option>
-			<option value="id desc" {% if sort == 'id desc' %} selected {% endif %}>
-				ID Descending
-
-			</option>
-			<option value="Rating asc" {% if sort == 'Rating asc' %} selected {% endif %}>
-				Rating Ascending
-
-			</option>
-			<option value="Rating desc" {% if sort == 'Rating desc' %} selected {% endif %}>
-				Rating Descending
-
-			</option>
-			<option value="ReviewDate asc" {% if sort == 'ReviewDate asc' %} selected {% endif %}>
-				Review Date Ascending
-
-			</option>
-			<option value="ReviewDate desc" {% if sort == 'ReviewDate desc' %} selected {% endif %}>
-				Review Date Descending
-
-			</option>
-		</select>
-		<button type="submit">
-			Search
-
-		</button>
+			<div class="row mt-3">
+				<div class="col">
+					<table class="table table-striped table-hover table-sm align-middle">
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>Product</th>
+								<th>Review Text</th>
+								<th>Reviewer</th>
+								<th>Rating</th>
+								<th>DateTime</th>
+								<th>Delete</th>
+								<th>Edit</th>
+							</tr>
+						</thead>
+						<tbody class="table-group-divider">
+							{% for review in reviews %}
+								<tr>
+									<td>{{ review.id }}</td>
+									<td>
+										{{ review.product.vendor.name }}
+										{{ review.product.GPU.name }}
+									</td>
+									<td>{{ review.ReviewText }}</td>
+									<td>{{ review.Reviewer }}</td>
+									<td>{{ review.Rating|number_format(2) }}&#10030;</td>
+									<td>{{ review.ReviewDate|date('Y-m-d H:i:s') }}</td>
+									<td>
+										<a href="{{ path('delete_review', { 'id': review.id }) }}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this review?')">
+											&#10005;
+										</a>
+									</td>
+									<td>
+										<a href="{{ path('edit_review', { 'id': review.id }) }}" class="btn btn-success">
+											&#9998;
+										</a>
+									</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
 	</form>
-	<a href="{{ path('reviews_view') }}">
-		clear search
 
-	</a>
-	<br>
-	<table>
-		<thead>
-			<tr>
-				<th>
-					Product
 
-				</th>
-				<th>
-					ID
-
-				</th>
-				<th>
-					review text
-
-				</th>
-				<th>
-					reviewer
-
-				</th>
-				<th>
-					rating
-
-				</th>
-				<th>
-					DateTime
-
-				</th>
-				<th>
-					Delete
-
-				</th>
-				<th>
-					Edit
-
-				</th>
-			</tr>
-		</thead>
-		<tbody>
-			{% for review in reviews %}
-				<tr>
-					<td>
-						{{ review.product.vendor.name }}
-					{{ review.product.GPU.name  }}
-					</td>
-					<td>
-						{{ review.id }}
-					</td>
-					<td>
-						{{ review.ReviewText }}
-					</td>
-					<td>
-						{{ review.Reviewer }}
-					</td>
-					<td>
-						{{ review.Rating }}
-					</td>
-                    <td>
-						{{ review.ReviewDate|date('Y-m-d H:i:s')}}
-					</td>
-					<td>
-						<a href="{{ path('delete_review', { 'id': review.id }) }}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this product?')">
-							Delete Review
-
-						</a>
-					</td>
-					<td>
-						<a href="{{ path('edit_review', { 'id': review.id }) }}" class="btn btn-success">
-							Edit Review
-
-						</a>
-					</td>
-				</tr>
-			{% endfor %}
-		</tbody>
-	</table>
-</body></html>{% endblock %}
+{% endblock %}

@@ -37,6 +37,8 @@ class ProductsController extends AbstractController
         $selectedMancountries = $request->query->all()['mancountries'] ?? null;
         $selectedVencountries = $request->query->all()['vencountries'] ?? null;
         $sort = $request->query->get('sort');
+        $startPrice = $request->query->get('startPrice');
+        $endPrice = $request->query->get('endPrice');
         if ($sort === null) {
             $sortBy = 'id';
             $sortDir = 'asc';
@@ -47,20 +49,36 @@ class ProductsController extends AbstractController
 
         $gpus = $gPURepository->findAll();
         $vendors = $vendorsRepository->findAll();
-        $products = $productsRepository->search($search, $selectedGpus, $selectedVendors, $selectedManufacturers, $selectedMemories, $selectedPCIVersions, $selectedCategories, $selectedMancountries, $selectedVencountries, $sortBy, $sortDir);
+        $products = $productsRepository->search($search, $selectedGpus, $selectedVendors, $selectedManufacturers, $selectedMemories, $selectedPCIVersions, $selectedCategories, $selectedMancountries, $selectedVencountries, $startPrice, $endPrice, $sortBy, $sortDir);
 
+        if ($sortBy != 'quantity') {
+            $zeroQuantityProducts = [];
+            $nonZeroQuantityProducts = [];
+
+            foreach ($products as $product) {
+                if ($product->getQuantity() == 0) {
+                    $zeroQuantityProducts[] = $product;
+                } else {
+                    $nonZeroQuantityProducts[] = $product;
+                }
+            }
+
+            // Merge the arrays
+            $products = array_merge($nonZeroQuantityProducts, $zeroQuantityProducts);
+        }
         $manufacturers = $manufacturersRepository->findAll();
         $memories = $memoryTypesRepository->findAll();
         $pciversions = $pCIRepository->findAll();
         $categories = $categoriesRepository->findAll();
 
-        $mancountries = array_map(function($manufacturer) {
-            return $manufacturer->getCountry(); // Replace 'getCountry()' with the actual getter method
+        $mancountries = array_map(function ($manufacturer) {
+            return $manufacturer->getCountry();
         }, $manufacturers);
 
-        $vencountries = array_map(function($vendor) {
-            return $vendor->getCountry(); // Replace 'getCountry()' with the actual getter method
+        $vencountries = array_map(function ($vendor) {
+            return $vendor->getCountry();
         }, $vendors);
+
 
 
         return $this->render('product/list.html.twig', [
@@ -75,14 +93,16 @@ class ProductsController extends AbstractController
             'memories' => $memories,
             'pciversions' => $pciversions,
             'categories' => $categories,
-            'mancountries' => $mancountries,
-            'vencountries' => $vencountries,
+            'mancountries' => array_unique($mancountries),
+            'vencountries' => array_unique($vencountries),
             'selectedManufacturers' => $selectedManufacturers,
             'selectedMemories' => $selectedMemories,
             'selectedPCIVersions' => $selectedPCIVersions,
             'selectedCategories' => $selectedCategories,
             'selectedManCountries' => $selectedMancountries,
             'selectedVenCountries' => $selectedVencountries,
+            'startPrice' => $startPrice,
+            'endPrice' => $endPrice,
         ]);
     }
 
@@ -91,9 +111,14 @@ class ProductsController extends AbstractController
     public function ProductInfo(ProductsRepository $productsRepository, $id, ReviewsRepository $reviewsRepository, Request $request, ManagerRegistry $doctrine)
     {
         $product = $productsRepository->findOneBy(['id' => $id]);
+        $product->setView();
+        $entityManager = $doctrine->getManager();
+        $entityManager->persist($product);
+        $entityManager->flush();
         $sortDir = $request->query->get('sortDir', 'ASC');
         $reviews = $reviewsRepository->findByProductId($id, $sortDir);
         $review = new Reviews();
+
         $reviewForm = $this->createForm(ReviewType::class, $review);
         $reviewForm->handleRequest($request);
 
@@ -102,14 +127,15 @@ class ProductsController extends AbstractController
 
             $review->setProduct($product);
             $review->setReviewDate(new \DateTime());
-
-            $entityManager = $doctrine->getManager();
+            $avgReview = $review->getRating();
+            foreach ($reviews as $rate) {
+                $avgReview += $rate->getRating();
+            }
+            $avgReview /= count($reviews) + 1;
+            $product->setRating($avgReview);
             $entityManager->persist($review);
             $entityManager->flush();
 
-            // Optionally add a flash message or other action
-
-            // Redirect to avoid form resubmission
             return $this->redirectToRoute('product', ['id' => $id]);
         }
 

@@ -28,9 +28,10 @@ class CartController extends AbstractController
 
         $cartData = [];
         $productQuantities = array_count_values($cartProductIds); // Count product quantities
-        
+        $totalPrice = 0;
         foreach ($cartProducts as $product) {
             $productId = $product->getId();
+            $totalPrice += $product->getPrice()*$productQuantities[$productId];
             $cartData[] = [
                 'id' => $productId,
                 'image' => $product->getImage(),
@@ -43,32 +44,32 @@ class CartController extends AbstractController
 
         return $this->render('cart/view.html.twig', [
             'cartData' => $cartData, // Pass the array of product entities to the template
+            'totalPrice' => $totalPrice
         ]);
     }
 
     #[Route('/add-to-cart/{id}', name: 'add_to_cart')]
-    public function addToCart(SessionInterface $sessionInterface, $id): Response
+    public function addToCart(SessionInterface $sessionInterface, $id, ProductsRepository $productsRepository, Request $request): Response
     {
         $cartProductIds = $sessionInterface->get('cart', []);
+        $productQuantities = array_count_values($cartProductIds); // Count product quantities
+        
+        
+        $product = $productsRepository->findOneBy(['id' => $id]);
+        if(!in_array($id, $cartProductIds) || $product->getQuantity()>$productQuantities[$id])
+            $cartProductIds[] = $id;
 
-        // Check if the product ID already exists in the cart
-        if (in_array($id, $cartProductIds)) {
-            // Increment the quantity if it exists
-            $cartProductIds[] = $id;
-        } else {
-            // Add the product ID to the cart if it doesn't exist
-            $cartProductIds[] = $id;
-        }
+                
 
         // Update the session cart data
         $sessionInterface->set('cart', $cartProductIds);
-
+        $referer = $request->headers->get('referer');
         // Redirect back to the product list or cart page
-        return $this->redirectToRoute('products_list');
+        return $this->redirect($referer);
     }
 
     #[Route('/remove-from-cart/{id}', name: 'remove_from_cart')]
-    public function removeFromCart(SessionInterface $sessionInterface, $id): Response
+    public function removeFromCart(SessionInterface $sessionInterface, $id, Request $request): Response
     {
         $cartProductIds = $sessionInterface->get('cart', []);
 
@@ -85,21 +86,23 @@ class CartController extends AbstractController
             $sessionInterface->set('cart', $cartProductIds);
         }
 
-        // Redirect back to the cart page
-        return $this->redirectToRoute('view_cart');
+        $referer = $request->headers->get('referer');
+        // Redirect back to the product list or cart page
+        return $this->redirect($referer);
     }
 
     #[Route('/clear-cart', name: 'clear_cart')]
-    public function clearCart(SessionInterface $sessionInterface): Response
+    public function clearCart(SessionInterface $sessionInterface, Request $request): Response
     {
         // Clear the entire cart
         $sessionInterface->remove('cart');
 
-        // Redirect back to the cart page
-        return $this->redirectToRoute('view_cart');
+        $referer = $request->headers->get('referer'); 
+        // Redirect back to the product list or cart page
+        return $this->redirect($referer);
     }
 
-    #[Route('/order/create', name: 'create_order')]
+    #[Route('/order/create', name: 'cart_continue')]
     public function createOrder(Request $request, ManagerRegistry $doctrine, ProductsRepository $productsRepository, SessionInterface $sessionInterface): Response
     {   
         $entityManager = $doctrine->getManager();
@@ -116,12 +119,13 @@ class CartController extends AbstractController
         $order = new Orders();
         foreach ($cartProducts as $product) {
             $orderDetail = new OrderDetails();
-            $orderDetail->setQuantity($productQuantities[$product->getId()]);
+            $orderedQuantity = $productQuantities[$product->getId()];
+            $orderDetail->setQuantity($orderedQuantity);
             $orderDetail->setProduct($product);
             $orderDetail->setOrder($order);
             //$order->addOrderDetail($orderDetail);
             $entityManager->persist($orderDetail);
-
+            $product->Ordered($orderedQuantity);
 
             $totalPrice += $orderDetail->getQuantity()*$product->getPrice();
             
@@ -136,7 +140,6 @@ class CartController extends AbstractController
             $order->setTotalPrice($totalPrice);
             $currentDateTime = new \DateTime();
             $order->setOrderDate($currentDateTime);
-            // Save the order and order details
             
             $entityManager->persist($order);
             $entityManager->flush();
@@ -149,6 +152,7 @@ class CartController extends AbstractController
         }
 
         return $this->render('cart/create_order.html.twig', [
+            'totalPrice' => $totalPrice,
             'form' => $form->createView(),
             'cartData' => $cartProducts,
             'productQuantities' => $productQuantities,

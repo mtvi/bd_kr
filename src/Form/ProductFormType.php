@@ -32,10 +32,10 @@ class ProductFormType extends AbstractType
             ->add('image', FileType::class, [
                 'label' => 'Product Image',
                 'required' => false,
-                'mapped' => false, // This ensures the image field is not associated with the entity
+                'mapped' => false, 
                 'constraints' => [
                     new File([
-                        'maxSize' => '2M',
+                        'maxSize' => '5M',
                         'mimeTypes' => [
                             'image/*',
                         ],
@@ -43,7 +43,9 @@ class ProductFormType extends AbstractType
                     ]),
                 ],
             ])
-            ->add('save', SubmitType::class, ['label' => 'Save Product']);
+            ->add('quantity')
+            ->add('Views')
+            ->add('save', SubmitType::class, ['label' => 'Save']);
     }
 
     public function configureOptions(OptionsResolver $resolver)

@@ -18,7 +18,7 @@ class MemoryType extends AbstractType
             ->add('Speed')
             ->add('BusWidth')
             ->add('BandWidth')
-            ->add('save', SubmitType::class, ['label' => 'Create Product']);
+            ->add('save', SubmitType::class, ['label' => 'Save']);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

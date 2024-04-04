@@ -17,7 +17,7 @@ class ManufacturerType extends AbstractType
             ->add('ManufacturerName', TextType::class)
             ->add('Website', TextType::class)
             ->add('Country', TextType::class)
-            ->add('save', SubmitType::class, ['label' => 'Create Product']);
+            ->add('save', SubmitType::class, ['label' => 'Save']);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -1,150 +1,215 @@
 {# templates/product/product_list.html.twig #}
 
 {% extends 'base.html.twig' %}
-{% block stylesheets %}
-	{# Add the following style block to set the image dimensions #}
-	<style>
-		img.product-image {
-			max-width: 100px; /* Set the maximum width */
-			max-height: 100px; /* Set the maximum height */
-		}
-	</style>
-{% endblock %}
+
 {% block body %}
 
-	<h1>Product List</h1>
 	<form id="searchForm" method="get" action="{{ path('products_list') }}">
-		<label for="search">
-			Search:
+		<div class="container mt-5">
+			<div class="row">
+				<div class="col-md-8">
+					<div class="form-group">
+						<input type="text" class="form-control" id="search" name="search" value="{{ search }}" placeholder="Search">
+					</div>
+				</div>
+				<div class="col-md-2">
+					<div class="form-group">
+						<select class="form-select " id="sort" name="sort">
+							<option value="id asc" {% if sort == 'id asc' %} selected {% endif %}>
+								Older
 
-		</label>
-		<input type="text" placeholder="Пошук" id="search" name="search" value="{{ search }}">
-		<label for="gpu">
-			GPU:
+							</option>
+							<option value="id desc" {% if sort == 'id desc' %} selected {% endif %}>
+								Newer
 
-		</label>
+							</option>
+							<option value="Rating asc" {% if sort == 'Rating asc' %} selected {% endif %}>
+								Rating Ascending
 
-		{# Populate GPU options based on your data #}
-		{% for gpu in gpus %}
-			<input type="checkbox" value="{{ gpu.id }}" {% if gpu.id in selectedGpus %} checked {% endif %} name="gpus[]">
-			{{ gpu.name }}
+							</option>
+							<option value="Rating desc" {% if sort == 'Rating desc' %} selected {% endif %}>
+								Rating Descending
 
-		{% endfor %}
-		<br>
-		<label for="vendor">
-			Vendor:
+							</option>
+							<option value="Price asc" {% if sort == 'Price asc' %} selected {% endif %}>
+								Price Ascending
 
-		</label>
+							</option>
+							<option value="Price desc" {% if sort == 'Price desc' %} selected {% endif %}>
+								Price Descending
 
-		{# Populate Vendor options based on your data #}
-		{% for vendor in vendors %}
-			<input name="vendors[]" type="checkbox" value="{{ vendor.id }}" {% if vendor.id in selectedVendors %} checked {% endif %}>
-			{{ vendor.name }}
+							</option>
+							<option value="ReleaseDate asc" {% if sort == 'ReleaseDate asc' %} selected {% endif %}>
+								GPU Date Ascending
 
-		{% endfor %}
-		<br>
-            <label for="manufacturer">
-            Manufacturer:
-        </label>
-        {% for manufacturer in manufacturers %}
-            <input name="manufacturers[]" type="checkbox" value="{{ manufacturer.id }}" {% if manufacturer.id in selectedManufacturers %} checked {% endif %}>
-            {{ manufacturer.ManufacturerName }}
-        {% endfor %}
-        <br>
-            <label for="memory">
-            Memory:
-        </label>
-        {% for memory in memories %}
-            <input name="memories[]" type="checkbox" value="{{ memory.id }}" {% if memory.id in selectedMemories %} checked {% endif %}>
-            {{ memory.type }}
-        {% endfor %}
-        <br>
-            <label for="pciversion">
-            PCI Version:
-        </label>
-        {% for pciversion in pciversions %}
-            <input name="pciversions[]" type="checkbox" value="{{ pciversion.id }}" {% if pciversion.id in selectedPCIVersions %} checked {% endif %}>
-            {{ pciversion.Version }}
-        {% endfor %}
-        <br>
-            <label for="category">
-            Category:
-        </label>
-        {% for category in categories %}
-            <input name="categories[]" type="checkbox" value="{{ category.id }}" {% if category.id in selectedCategories %} checked {% endif %}>
-            {{ category.CategoryName }}
-        {% endfor %}
-        <br>
-            <label for="mancountry">
-            Manufacturer Country:
-        </label>
-        {% for mancountry in mancountries %}
-            <input name="mancountries[]" type="checkbox" value="{{ mancountry }}" {% if mancountry in selectedManCountries %} checked {% endif %}>
-            {{ mancountry }}
-        {% endfor %}
-        <br>
-            <label for="vencountry">
-            Vendor Country:
-        </label>
-        {% for vencountry in vencountries %}
-            <input name=" []" type="checkbox" value="{{ vencountry }}" {% if vencountry in selectedVenCountries %} checked {% endif %}>
-            {{ vencountry }}
-        {% endfor %}
-        <br>
-        
-		<label for="sort">
-			Sort by Price:
+							</option>
+							<option value="ReleaseDate desc" {% if sort == 'ReleaseDate desc' %} selected {% endif %}>
+								GPU Date Descending
 
-		</label>
-		<select id="sort" name="sort">
-			<option value="id asc" {% if sort == 'id asc' %} selected {% endif %}>
-				ID Ascending
+							</option>
+						</select>
+					</div>
+				</div>
+				<div class="col-md-2">
+					<div class="form-group">
+						<button type="submit" class="btn btn-success form-control">Search</button>
+					</div>
+				</div>
+			</div>
+			<div class="row mt-3">
+				<div class="col-md-3">
+					<h3>Filters</h3>
 
-			</option>
-			<option value="id desc" {% if sort == 'id desc' %} selected {% endif %}>
-				ID Descending
+					<div class="form-group">
+						<label for="startPrice">Start Price:</label>
+						<div class="input-group">
+							<input type="number" class="form-control" id="startPrice" name="startPrice" value="{{ startPrice }}">
+							<div class="input-group-append">
+								<span class="input-group-text">$</span>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="endPrice">End Price:</label>
+						<div class="input-group">
+							<input type="number" class="form-control" id="endPrice" name="endPrice" value="{{ endPrice }}">
+							<div class="input-group-append">
+								<span class="input-group-text">$</span>
+							</div>
+						</div>
+					</div>
 
-			</option>
-			<option value="Price asc" {% if sort == 'Price asc' %} selected {% endif %}>
-				Price Ascending
 
-			</option>
-			<option value="Price desc" {% if sort == 'Price desc' %} selected {% endif %}>
-				Price Descending
+					<div class="form-group">
+						<label for="gpu">GPU:</label>
+						{% for gpu in gpus %}
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" id="gpu{{ gpu.id }}" value="{{ gpu.id }}" {% if gpu.id in selectedGpus %} checked {% endif %} name="gpus[]">
+								<label class="form-check-label" for="gpu{{ gpu.id }}">{{ gpu.name }}</label>
+							</div>
+						{% endfor %}
+					</div>
+					<div class="form-group">
+						<label for="vendor">Vendor:</label>
+						{% for vendor in vendors %}
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" id="vendor{{ vendor.id }}" value="{{ vendor.id }}" {% if vendor.id in selectedVendors %} checked {% endif %} name="vendors[]">
+								<label class="form-check-label" for="vendor{{ vendor.id }}">{{ vendor.name }}</label>
+							</div>
+						{% endfor %}
+					</div>
 
-			</option>
-			<option value="ReleaseDate asc" {% if sort == 'ReleaseDate asc' %} selected {% endif %}>
-				GPU Date Ascending
+					<div class="form-group">
+						<label for="manufacturer">Manufacturer:</label>
+						{% for manufacturer in manufacturers %}
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" id="manufacturer{{ manufacturer.id }}" value="{{ manufacturer.id }}" {% if manufacturer.id in selectedManufacturers %} checked {% endif %} name="manufacturers[]">
+								<label class="form-check-label text-capitalize" for="manufacturer{{ manufacturer.id }}">{{ manufacturer.ManufacturerName }}</label>
+							</div>
+						{% endfor %}
+					</div>
 
-			</option>
-			<option value="ReleaseDate desc" {% if sort == 'ReleaseDate desc' %} selected {% endif %}>
-				GPU Date Descending
+					<div class="form-group">
+						<label for="memory">Memory:</label>
+						{% for memory in memories %}
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" id="memory{{ memory.id }}" value="{{ memory.id }}" {% if memory.id in selectedMemories %} checked {% endif %} name="memories[]">
+								<label class="form-check-label" for="memory{{ memory.id }}">{{ memory.type }}</label>
+							</div>
+						{% endfor %}
+					</div>
 
-			</option>
-		</select>
-		<button type="submit">
-			Search
+					<div class="form-group">
+						<label for="pciversion">PCI Version:</label>
+						{% for pciversion in pciversions %}
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" id="pciversion{{ pciversion.id }}" value="{{ pciversion.id }}" {% if pciversion.id in selectedPCIVersions %} checked {% endif %} name="pciversions[]">
+								<label class="form-check-label" for="pciversion{{ pciversion.id }}">{{ pciversion.Version }} x{{ pciversion.LanesNumber }} </label>
+							</div>
+						{% endfor %}
+					</div>
 
-		</button>
-	</form>
-	<a href="{{ path('products_list') }}">
-		clear search</a>
-	<ul>
-		{% for product in products %}
-			<li>
-				<a href="{{ path('product', {'id': product.id}) }}">
-					{% if product.image is not null %}
-						<img src="{{ asset('images/' ~ product.image) }}" alt="Product Image" class="product-image">
-					{% endif %}
-				</a>
-				{{ product.vendor.name }}
-				{{ product.GPU.name  }}
-				-
-				{{ product.price }}
-				USD
-				<a href="{{ path('add_to_cart', {'id': product.id}) }}">Add to Cart</a>
-			</li>
-		{% endfor %}
-	</ul>
-	<a href="{{ path('view_cart') }}">View Cart</a>
-{% endblock %}
+					<div class="form-group">
+						<label for="category">Category:</label>
+						{% for category in categories %}
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" id="category{{ category.id }}" value="{{ category.id }}" {% if category.id in selectedCategories %} checked {% endif %} name="categories[]">
+								<label class="form-check-label" for="category{{ category.id }}">{{ category.CategoryName }}</label>
+							</div>
+						{% endfor %}
+					</div>
+
+
+
+					<div class="form-group">
+						<label for="vencountry">Vendor Country:</label>
+						{% for vencountry in vencountries %}
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" id="vencountry{{ vencountry }}" value="{{ vencountry }}" {% if vencountry in selectedVenCountries %} checked {% endif %} name="vencountries[]">
+								<label class="form-check-label" for="vencountry{{ vencountry }}">{{ vencountry }}</label>
+							</div>
+						{% endfor %}
+					</div>
+
+				</div>
+				<div class="col-md-9">
+
+
+					<div class="row">
+						{% for product in products %}
+							<div class="col-md-4 mb-4">
+								<div class="card">
+									<a href="{{ path('product', {'id': product.id}) }}">
+										{% if product.image is not null %}
+											<img src="{{ asset('images/' ~ product.image) }}" alt="Product Image" class="card-img-top" style="object-fit: cover; height: 300px;">
+										{% endif %}
+									</a>
+									<div class="card-body">
+										<h5 class="card-title">{{ product.vendor.name ~ ' ' ~ product.GPU.name }}</h5>
+										<p class="card-text">
+											{% if product.rating == 0 %}
+												No rating yet
+											{% else %}
+
+												<div class="d-flex align-items-center">
+													<div class="rating-container " style="display: flex; align-items: center;">
+														<input class="input-id" name="input-name" type="number" value="{{ product.rating}}">
+														<label>
+															({{product.rating|number_format(2)}})
+														</label>
+													</div>
+												</div>
+
+											{% endif %}
+										</p>
+										<p class="card-text fs-4">{{ product.price }}
+											USD</p>
+										{% if product.quantity < 1 %}
+											<a class="btn btn-outline-danger w-100 disabled">Out of stock</a>
+										{% else %}
+											<a href="{{ path('add_to_cart', {'id': product.id}) }}" class="btn btn-success w-100">Add to Cart</a>
+										{% endif %}
+									</div>
+								</div>
+							</div>
+							{% if loop.index % 3 == 0 %}
+							</div>
+							<div class="row">
+							{% endif %}
+						{% endfor %}
+					</div>
+
+				</div>
+			</form>
+			<script>
+				$(document).ready(function () {
+$('.input-id').rating({
+step: 0,
+size: 'xs',
+showClear: false,
+displayOnly: true,
+showCaption: false
+});
+});
+			</script>
+		{% endblock %}

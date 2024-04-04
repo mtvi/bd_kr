@@ -3,32 +3,126 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Product List</h1>
 
-    <ul>
-            <li>
-                <strong>{{ product.vendor.name }} {{ product.GPU.name  }}</strong><br>
-                Price: ${{ product.price }}<br>
-                <!-- Add more product details as needed -->
-            </li>
-            <h2>GPU Details</h2>
-            <p> Name: {{ product.gpu.name }}</p>
-            <p> Core Clock: {{ product.gpu.CoreClock }}</p>
-            <p> Manufacturer: {{ product.gpu.manufacturer.ManufacturerName }}</p>
-    </ul>
-<h2>Leave a Review</h2>
-    {{ form_start(reviewForm) }}
-    {{ form_widget(reviewForm) }}
-    <button type="submit">Submit Review</button>
-    {{ form_end(reviewForm) }}
-<h2>Reviews</h2>
-    {% for review in reviews %}
-    <div class="review">
-        <h3>{{ review.Reviewer }}</h3>
-        <p>{{ review.ReviewText }}</p>
-        <p>Date: {{ review.ReviewDate|date('Y-m-d') }}</p>
-        <p>Rating: {{ review.Rating }}</p>
-    </div>
-{% endfor %}
+	<div class="container mt-5">
 
+<div class="fs-5">
+		
+		<a class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover" href="{{ path('products_list', {'vendors[]': product.vendor.id}) }}">&#10148; {{product.vendor.name}}</a>
+		<a class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover" href="{{ path('products_list', {'gpus[]': product.GPU.id}) }}">&#10148; {{product.GPU.name}}</a>
+</div>
+
+		<div class="row">
+			<!-- Product Image -->
+			<div class="col-md-8">
+				<div>
+					{% if product.image is not null %}
+						<img src="{{ asset('images/' ~ product.image) }}" alt="Product Image" class="w-50 img-fluid rounded mx-auto d-block">
+					{% endif %}
+				</div>
+			</div>
+			<!-- Product Details -->
+			<div class="col-md-4 fs-4">
+				<h2>{{ product.vendor.name ~ ' ' ~ product.GPU.name }}</h2>
+				<p>Price: ${{ product.price }}</p>
+
+
+				<form method="post" action="{{ path('add_to_cart', {'id': product.id}) }}">
+					<button type="submit" {% if product.quantity < 1 %}disabled {% endif %}class="btn btn-success">{% if product.quantity < 1 %}Out of stock {% else %}Add to Cart  {% endif %}</button>
+				</form>
+				
+			</div>
+		</div>
+
+		<!-- Product Characteristics -->
+		<div class="row mt-5">
+			<div class="col-md-8">
+				<h3>Product Characteristics</h3>
+				<ul class="list-group" >
+                    <li class="list-group-item list-group-item-action">Category: {{product.gpu.Category.categoryname}}</li> 
+					<li class="list-group-item list-group-item-action">Best For: {{product.gpu.Category.description}}</li> 
+                    <li class="list-group-item list-group-item-action">Cooling: {{product.CoolingType}}</li> 
+					<li class="list-group-item list-group-item-action">Vendor: {{product.vendor.name}}</li> 
+                    <li class="list-group-item list-group-item-action">Vendor Website: {{product.vendor.website}}</li> 
+                    <li class="list-group-item list-group-item-action">Vendor Country: {{product.vendor.country}}</li>
+                    <li class="list-group-item list-group-item-action">GPU: {{product.GPU.name}}</li>
+                    <li class="list-group-item list-group-item-action">Release Date: {{product.GPU.ReleaseDate|date('Y-m-d')}}</li>
+                    <li class="list-group-item list-group-item-action">Core Clock: {{product.GPU.CoreClock}} MHz</li>
+                    <li class="list-group-item list-group-item-action">Boost Clock: {{product.GPU.boostclock}} MHz</li>
+                    <li class="list-group-item list-group-item-action">TDP: {{product.GPU.tdp}} W</li>
+                    <li class="list-group-item list-group-item-action">Video RAM: {{product.GPU.vram}} Gb</li>
+                    <li class="list-group-item list-group-item-action">Memory Type: {{product.GPU.memory.type}}</li>
+                    <li class="list-group-item list-group-item-action">Memory Speed: {{product.GPU.memory.speed}} GB/s </li>
+                    <li class="list-group-item list-group-item-action">Memory Bus Width: {{product.GPU.memory.buswidth}} bit</li>
+                    <li class="list-group-item list-group-item-action">Memory Band Width: {{product.GPU.memory.bandwidth}} GB/s</li>
+                    <li class="list-group-item list-group-item-action">PCI Version: {{product.gpu.PCIVersion.version}} x{{product.gpu.PCIVersion.lanesnumber}}</li>
+                    <li class="list-group-item list-group-item-action">PSI Band Width: {{product.gpu.PCIVersion.bandwidth}} GB/s</li>
+
+                                        <li class="list-group-item list-group-item-action">Manufacturer: {{product.gpu.Manufacturer.Manufacturername}}</li>
+                    <li class="list-group-item list-group-item-action">Manufacturer Website: {{product.GPU.Manufacturer.Website}}</li>
+                    <li class="list-group-item list-group-item-action">Manufacturer Country: {{product.GPU.Manufacturer.Country}}</li>
+				</ul>
+			</div>
+
+			<!-- Reviews -->
+			<div class="mt-3">
+				<h2>Leave a Review</h2>
+				{{ form_start(reviewForm) }}
+				{{ form_widget(reviewForm) }}
+				<button type="submit" class="btn btn-dark mt-2">Submit Review</button>
+				{{ form_end(reviewForm) }}
+
+				<h2 class="mt-3 mb-3" >Avarage rating - {{product.Rating|number_format(2)}}&#10030</h2>
+				{% for review in reviews %}
+				<div class="mb-4">
+                            <div class="card mb-2 borderViolet"
+                                 style="display: flex;flex-direction: column;height: 100%;">
+                                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <label class="ml-3 mb-0 colorViolet">{{ review.Reviewer }}</label>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <div class="rating-container " style="display: flex; align-items: center;">
+                                            <input class="input-id" name="input-name" type="number"
+                                                   value="{{ review.Rating }}">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card-body d-flex" style="flex: 1;">
+                                    <p class="card-text align-self-center text-center">{{ review.ReviewText }}</p>
+                                </div>
+                                <div class="card-footer bg-white colorViolet">
+                                    {{ review.ReviewDate | date('Y-m-d H:i') }}
+                                </div>
+                            </div>
+                        </div>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+
+    <script>
+        $(document).ready(function(){
+            $('#review_Rating').rating({min:0, max:5, step:1,
+                minThreshold: 1, showClear: false, showCaption: false,
+                starTitles: {
+                    1: 'Одна зірка',
+                    2: 'Дві зірки',
+                    3: 'Три зірки',
+                    4: 'Чотири зірки',
+                    5: 'П\'ять зірок'
+                }
+            });
+			    $('.input-id').rating({min:0, size:'xs', displayOnly: true, showCaption: false, starTitles: {
+            1: 'Одна зірка',
+            2: 'Дві зірки',
+            3: 'Три зірки',
+            4: 'Чотири зірки',
+            5: 'П\'ять зірок'
+        }
+    });
+        });
+
+    </script>
 {% endblock %}
