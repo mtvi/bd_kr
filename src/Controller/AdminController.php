@@ -126,8 +126,8 @@ class AdminController extends AbstractController
             'memories' => $memories,
             'pciversions' => $pciversions,
             'categories' => $categories,
-            'mancountries' => $mancountries,
-            'vencountries' => $vencountries,
+            'mancountries' => array_unique($mancountries),
+            'vencountries' => array_unique($vencountries),
             'selectedManufacturers' => $selectedManufacturers,
             'selectedMemories' => $selectedMemories,
             'selectedPCIVersions' => $selectedPCIVersions,
@@ -326,12 +326,8 @@ class AdminController extends AbstractController
         if (!$product) {
             throw $this->createNotFoundException('Product not found');
         }
-
-        // Remove the product
         $doctrine->getManager()->remove($product);
         $doctrine->getManager()->flush();
-
-        // Redirect to a success page or do something else
         return $this->redirectToRoute('products_view');
     }
     #[Route('/admin/products/edit/{id}', name: 'edit_product')]
@@ -339,30 +335,19 @@ class AdminController extends AbstractController
     {
         $entityManager = $doctrine->getManager();
         $product = $productsRepository->find($id);
-
         if (!$product) {
             throw $this->createNotFoundException('Product not found');
         }
-
         $form = $this->createForm(ProductFormType::class, $product);
-
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $uploadedFile = $form->get('image')->getData();
-
             if ($uploadedFile) {
-                // Generate a unique name for the file
                 $newFilename = uniqid() . '.' . $uploadedFile->guessExtension();
-
-                // Move the file to the directory where images are stored
                 $uploadedFile->move('images', $newFilename);
-
-                // Update the 'image' property of the entity
                 $product->setImage($newFilename);
             }
             $entityManager->flush();
-
-            // Redirect to a success page or do something else
             return $this->redirectToRoute('products_view');
         }
 

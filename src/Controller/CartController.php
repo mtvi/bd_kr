@@ -53,18 +53,12 @@ class CartController extends AbstractController
     {
         $cartProductIds = $sessionInterface->get('cart', []);
         $productQuantities = array_count_values($cartProductIds); // Count product quantities
-        
-        
+
         $product = $productsRepository->findOneBy(['id' => $id]);
         if(!in_array($id, $cartProductIds) || $product->getQuantity()>$productQuantities[$id])
             $cartProductIds[] = $id;
-
-                
-
-        // Update the session cart data
         $sessionInterface->set('cart', $cartProductIds);
         $referer = $request->headers->get('referer');
-        // Redirect back to the product list or cart page
         return $this->redirect($referer);
     }
 
@@ -72,33 +66,23 @@ class CartController extends AbstractController
     public function removeFromCart(SessionInterface $sessionInterface, $id, Request $request): Response
     {
         $cartProductIds = $sessionInterface->get('cart', []);
-
-        // Check if the product ID exists in the cart
         $key = array_search($id, $cartProductIds);
         if ($key !== false) {
-            // Remove the product from the cart
             unset($cartProductIds[$key]);
 
-            // Re-index the array to remove gaps
             $cartProductIds = array_values($cartProductIds);
-
-            // Update the session cart data
             $sessionInterface->set('cart', $cartProductIds);
         }
-
         $referer = $request->headers->get('referer');
-        // Redirect back to the product list or cart page
+
         return $this->redirect($referer);
     }
 
     #[Route('/clear-cart', name: 'clear_cart')]
     public function clearCart(SessionInterface $sessionInterface, Request $request): Response
     {
-        // Clear the entire cart
         $sessionInterface->remove('cart');
-
         $referer = $request->headers->get('referer'); 
-        // Redirect back to the product list or cart page
         return $this->redirect($referer);
     }
 
@@ -106,15 +90,10 @@ class CartController extends AbstractController
     public function createOrder(Request $request, ManagerRegistry $doctrine, ProductsRepository $productsRepository, SessionInterface $sessionInterface): Response
     {   
         $entityManager = $doctrine->getManager();
-        // Fetch cart data from the session
         $cartProductIds = $sessionInterface->get('cart', []);
-
-        // Retrieve the product entities associated with the product IDs
         $cartProducts = $productsRepository->findBy(['id' => $cartProductIds]);
 
         $productQuantities = array_count_values($cartProductIds);
-
-        // Create a new order and order details
         $totalPrice = 0;
         $order = new Orders();
         foreach ($cartProducts as $product) {
@@ -123,7 +102,6 @@ class CartController extends AbstractController
             $orderDetail->setQuantity($orderedQuantity);
             $orderDetail->setProduct($product);
             $orderDetail->setOrder($order);
-            //$order->addOrderDetail($orderDetail);
             $entityManager->persist($orderDetail);
             $product->Ordered($orderedQuantity);
 
@@ -131,10 +109,8 @@ class CartController extends AbstractController
             
         }
 
-        // Create the order form
         $form = $this->createForm(OrderFormType::class, $order);
 
-        // Handle form submission
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $order->setTotalPrice($totalPrice);
